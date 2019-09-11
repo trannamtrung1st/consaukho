@@ -1,0 +1,130 @@
+﻿@page
+@model CSK.Admin.Pages.Category.IndexModel
+@{
+}
+
+@section style{
+<style>
+    .card {
+        box-shadow: 0px 0px 5px gray;
+        padding: 20px;
+    }
+
+        .card, .card img {
+            width: 100%
+        }
+</style>
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Danh mục sản phẩm
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="/category/create/" class="btn btn-primary">
+            Thêm danh mục
+        </a>
+        <a href="../" class="btn btn-link pull-right">
+            Trở lại
+        </a>
+    </h1>
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="row" id="cards-wrapper">
+        <!-- dynamic data -->
+    </div>
+</section>
+<!-- /.content -->
+@section script {
+<script>
+    pageInit();
+    function pageInit() {
+        getCategories();
+    }
+
+    function getCategories() {
+        $.ajax({
+            url: '/api/product-categories?fields=info&fields=pcount',
+            type: 'get',
+            success: (data) => {
+                for (var i = 0; i < data.length; i++)
+                    addCategory(data[i]);
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+                Swal.fire({
+                    type: 'error',
+                    title: 'Message',
+                    text: data.message,
+                });
+            }
+        });
+
+        function addCategory(cate) {
+            var wrap = $('#cards-wrapper');
+            wrap.append(
+                $('<div class="col-md-3">').append(
+                    $('<div class="card">').append(
+                        $('<a href="/category/' + cate.id + '/"><img src="'
+                            + (cate.image_url || '/dist/img/no-image-icon-11.png') + '" class="card-img-top"/></a>')
+                    ).append(
+                        $('<div class="card-body">').append(
+                            $('<h3 class="card-title">').append(cate.name)
+                        ).append(
+                            $('<p class="card-text">').append(
+                                (cate.description || '') + '<br/>' + '<b>Số sản phẩm</b>: ' + cate.pcount
+                            )
+                        ).append(
+                            $('<a href="/category/' + cate.id + '/" class="btn btn-info">Chi tiết danh mục</a>')
+                        ).append(' ').append(
+                            $('<a href="#" class="btn btn-danger" onclick="deleteCategory(\'' + cate.id + '\')">Xóa danh mục</a>')
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    function deleteCategory(id) {
+        Swal.fire({
+            title: 'Bạn chắc chắn muốn xóa?',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Chắc chắn',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: '/api/product-categories/' + id,
+                    type: 'delete',
+                    success: (data) => {
+                        Swal.fire({
+                            type: 'success',
+                            title: 'Message',
+                            text: 'Xóa thành công',
+                        }).then(() => { location.reload(); });
+                    },
+                    error: (data) => {
+                        console.log(data);
+                        data = data.responseJSON;
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Message',
+                            text: data.message,
+                        });
+                    }
+                });
+            }
+        });
+
+
+    }
+
+</script>
+}
