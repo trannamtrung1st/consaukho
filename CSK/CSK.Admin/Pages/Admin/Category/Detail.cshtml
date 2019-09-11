@@ -1,0 +1,139 @@
+﻿@page "/admin/category/{id}"
+@model CSK.Admin.Pages.Admin.Category.DetailModel
+@{
+}
+
+@section style{ 
+<style>
+    form img {
+        width:100%;
+    }
+</style>
+
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Chi tiết danh mục: <b id="cate-name"><!-- dynamic data --></b>
+
+        <a href="../" class="btn btn-link pull-right">
+            Trở lại
+        </a>
+    </h1>
+
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Thông tin danh mục</h3>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form role="form">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label>ID</label>
+                            <div id="lbl-id">
+                                <!--dynamic data-->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tên danh mục</label>
+                            <input type="text" name="name"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Mô tả</label>
+                            <textarea name="description" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Hình đại diện</label>
+                            <input type="file" accept="image/*" name="file">
+                        </div>
+                        <div class="col-md-6">
+                            <!-- dynamic data -->
+                            <img src="/admin/dist/img/no-image-icon-11.png" />
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+                        <button type="button" class="btn btn-primary" id="btn-update">Cập nhật</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</section>
+<!-- /.content -->
+@section script {
+<script>
+    pageInit();
+    function pageInit() {
+        loadCategory();
+        $('#btn-update').click(updateCategory);
+    }
+
+    function loadCategory() {
+        $.ajax({
+            url: '/api/product-categories/@Model.Id',
+            type: 'get',
+            success: (data) => {
+                $('#cate-name').text(data.name);
+                $('#lbl-id').text(data.id);
+                $('form [name=name]').val(data.name);
+                $('form [name=description]').val(data.description);
+                if (data.image_url)
+                    $('form img').attr('src', data.image_url);
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+                Swal.fire({
+                    type: 'error',
+                    title: 'Message',
+                    text: data.message,
+                });
+            }
+        });
+    }
+
+    function updateCategory() {
+        var formData = new FormData($('form')[0]);
+        $.ajax({
+            url: '/api/product-categories/@Model.Id',
+            type: 'post',
+            contentType: false,
+            processData: false,
+            cache: false,
+            data: formData,
+            success: (data) => {
+                Swal.fire({
+                    type: 'success',
+                    title: 'Message',
+                    text: 'Cập nhật thành công',
+                }).then(() => {
+                    location.reload();
+                });
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+                Swal.fire({
+                    type: 'error',
+                    title: 'Message',
+                    text: data.message,
+                });
+            }
+        });
+    }
+
+</script>
+
+}

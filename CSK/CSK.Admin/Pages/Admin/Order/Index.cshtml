@@ -1,0 +1,226 @@
+﻿@page
+@model CSK.Admin.Pages.Admin.Order.IndexModel
+@{
+
+}
+
+@section style{
+<style>
+    .status-new {
+        color: blue;
+    }
+
+    .status-accepted {
+        color: brown;
+    }
+
+    .status-cancled {
+        color: red;
+    }
+
+    .status-finished {
+        color: forestgreen;
+    }
+</style>
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Đơn đặt hàng
+        <a href="../" class="btn btn-link pull-right">
+            Trở lại
+        </a>
+    </h1>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">Danh sách đơn đặt hàng</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body table-responsive no-padding">
+                            <table id="tbl-orders" class="table table-hover">
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Mã hóa đơn</th>
+                                    <th>Khách hàng</th>
+                                    <th>Tổng ban đầu (VND)</th>
+                                    <th>Tổng cuối cùng (VND)</th>
+                                    <th>Thời gian</th>
+                                    <th>Tình trạng</th>
+                                    <th>Thao tác</th>
+                                </tr>
+
+                            </table>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer clearfix">
+                            <ul id="order-pages" class="pagination pagination-sm no-margin pull-right"></ul>
+                        </div>
+                    </div>
+                    <!-- /.box -->
+                </div>
+            </div>
+
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+    </div>
+</section>
+<!-- /.content -->
+@section script {
+
+<script>
+    pageInit();
+    function pageInit() {
+        getOrders();
+    }
+
+    var pCount = 1;
+    function getOrders() {
+
+        $.ajax({
+            url: '/api/sale-orders/count',
+            type: 'get',
+            success: (data) => {
+                console.log(data);
+                pCount = Math.floor(data / 50);
+                if (pCount == 0)
+                    pCount = 1;
+                loadOrderPage(1);
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+                Swal.fire({
+                    type: 'error',
+                    title: 'Message',
+                    text: data.message,
+                });
+            }
+        });
+
+    }
+
+    function loadOrderPage(page) {
+        function setPage(page) {
+            var pagesContainer = $('#order-pages');
+            pagesContainer.find('li').remove();
+            pagesContainer.append(
+                $('<li><a href="#" onclick="loadOrderPage(1);return false;">&laquo;</a></li>')
+            );
+
+            if (page < 3) {
+                var first = pCount > 3 ? 3 : pCount;
+                for (var i = 1; i <= first; i++) {
+                    pagesContainer.append(
+                        $('<li id="page' + i + '"><a href="#" onclick="loadOrderPage(' + i + ');return false;">' + i + '</a></li>')
+                    );
+                }
+                if (pCount > 3) {
+                    pagesContainer.append(
+                        $('<li><span>...</span></li>')
+                    );
+                }
+            }
+            else if (page <= pCount - 2) {
+                pagesContainer.append(
+                    $('<li><span>...</span></li>')
+                );
+
+                var first = page - 1;
+                for (var i = first; i <= first + 2; i++) {
+                    pagesContainer.append(
+                        $('<li id="page' + i + '"><a href="#" onclick="loadOrderPage(' + i + ');return false;">' + i + '</a></li>')
+                    );
+                }
+                pagesContainer.append(
+                    $('<li><span>...</span></li>')
+                );
+            } else {
+                pagesContainer.append(
+                    $('<li><span>...</span></li>')
+                );
+
+                var first = pCount - 2;
+                for (var i = first; i <= first + 2; i++) {
+                    pagesContainer.append(
+                        $('<li id="page' + i + '"><a href="#" onclick="loadOrderPage(' + i + ');return false;">' + i + '</a></li>')
+                    );
+                }
+            }
+
+            pagesContainer.append(
+                $('<li><a href="#" onclick="loadOrderPage(' + pCount + ');return false;">&raquo;</a></li>')
+            );
+            $('#page' + page).addClass('active');
+        }
+        setPage(page);
+
+        $('#tbl-orders .order-data-row').remove();
+
+        function toStatusElement(status) {
+            if (status == 'New')
+                return '<td class="status-new">Mới</td>';
+            if (status == 'Accepted')
+                return '<td class="status-accepted">Đã duyệt</td>';
+            if (status == 'Cancled')
+                return '<td class="status-cancled">Đã hủy</td>';
+            if (status == 'Finished')
+                return '<td class="status-finished">Đã hoàn thành</td>';
+        }
+
+        function addOrder(ord, no) {
+            var table = $('#tbl-orders');
+            table.append(
+                $('<tr class="order-data-row">').append(
+                    $('<td>' + no + '</td>')
+                ).append(
+                    $('<td>' + ord.id + '</td>')
+                ).append(
+                    $('<td>' + ord.customer.name + '</td>')
+                ).append(
+                    $('<td>' + toMoneyFormat(ord.total_amount.toString()) + '</td>')
+                ).append(
+                    $('<td>' + toMoneyFormat(ord.final_amount.toString()) + '</td>')
+                ).append(
+                    $('<td>' + ord.order_time + '</td>')
+                ).append(
+                    $(toStatusElement(ord.status))
+                ).append(
+                    $('<td><a href="/admin/order/' + ord.id + '/">CHI TIẾT</a></td>')
+                )
+            );
+        }
+
+        $.ajax({
+            url: '/api/sale-orders?fields=info&fields=cinfo&sorts=aorder_time&page=' + page,
+            type: 'get',
+            success: (data) => {
+                console.log(data);
+                for (var i = 0; i < data.length; i++) {
+                    addOrder(data[i], (page - 1) * 50 + i + 1);
+                }
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+                Swal.fire({
+                    type: 'error',
+                    title: 'Message',
+                    text: data.message,
+                });
+            }
+        });
+    }
+
+</script>
+}

@@ -138,11 +138,31 @@ namespace CSK.Admin.Controllers
         }
 
         [HttpGet("")]
-        public IActionResult Get([FromQuery]string[] fields)
+        public IActionResult Get([FromQuery]string[] fields,
+            [FromQuery]string[] sorts,
+            [FromQuery]int page = 1, [FromQuery]int limit = 50)
         {
             try
             {
-                var ord = _context.SaleOrders.ToList();
+                var ordQuery = _context.SaleOrders.AsQueryable();
+                if (sorts != null && sorts.Length > 0)
+                {
+                    foreach (var s in sorts)
+                    {
+                        var isAsc = s[0] == 'a';
+                        var sStr = s.Substring(1);
+                        switch (sStr)
+                        {
+                            case "order_time":
+                                if (isAsc)
+                                    ordQuery = ordQuery.OrderBy(o => o.OrderTime);
+                                else
+                                    ordQuery = ordQuery.OrderByDescending(o => o.OrderTime);
+                                break;
+                        }
+                    }
+                }
+                var ord = ordQuery.Skip((page - 1) * limit).Take(limit).ToList();
                 if (fields == null || fields.Length == 0)
                     fields = new string[] { "info" };
                 var list = new List<IDictionary<string, object>>();
@@ -191,6 +211,26 @@ namespace CSK.Admin.Controllers
                 });
             }
         }
+
+
+        [HttpGet("count")]
+        public IActionResult Count()
+        {
+            try
+            {
+                var count = _context.SaleOrders.Count();
+                return Ok(count);
+            }
+            catch (Exception e)
+            {
+                return Error(new
+                {
+                    message = "Có lỗi xảy ra. Vui lòng thử lại.",
+                    data = e,
+                });
+            }
+        }
+
 
         [HttpGet("{id}")]
         public IActionResult GetById(string id)

@@ -1,0 +1,212 @@
+﻿@page
+@model CSK.Admin.Pages.Admin.Product.CreateModel
+@{
+}
+
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Thêm sản phẩm
+
+        <a href="../" class="btn btn-link pull-right">
+            Trở lại
+        </a>
+    </h1>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Thông tin sản phẩm</h3>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form role="form">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label>Tên sản phẩm</label>
+                            <input type="text" name="name"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Mã sản phẩm</label>
+                            <input type="text" name="code"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group" id="categories">
+                            <label>Danh mục</label><br />
+                            <div>
+                                <select class="form-control" id="select-categories" style="max-width:50%;display:inline-block"></select>
+                                <button type="button" class="btn btn-primary" onclick="addCate()">Thêm</button>
+                            </div>
+                            <br />
+
+
+                        </div>
+                        <div class="form-group">
+                            <label>Mô tả</label>
+                            <textarea name="description" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Số lượng sẵn có</label> <br />
+                            <input type="number" name="in_stock_amount" step="1" min="0" value="0">
+                            <input type="text" name="unit_name" placeholder="Đơn vị: cái, chiếc ..." />
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                Hiển thị số lượng sẵn có
+                                <input type="checkbox" name="is_in_stock_amount_visible" value="true" style="padding:10px">
+                            </label><br />
+                            <i>Chọn: hiển thị số lượng</i><br />
+                            <i>Không chọn: hiển thị còn/hết hàng</i><br />
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn giá</label> <br />
+                            <input type="number" name="unit_price" step="1000" min="0"> (VND)
+                        </div>
+                        <div class="form-group">
+                            <label>Giảm giá</label> <br />
+                            <input id="inp-discount" type="number" name="discount_amount" step="1000" min="0">
+                            <select id="product-discount" style="padding:3.75px;" onchange="discountUnitChange(this)">
+                                <option value="VND">VND</option>
+                                <option value="%">%</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                Hiển thị sản phẩm
+                                <input type="checkbox" name="is_visible" checked value="true">
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Chọn hình ảnh</label>
+                            <input type="file" multiple
+                                   accept="image/*" name="images">
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+                        <button type="button" class="btn btn-primary" id="btn-create">Tạo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</section>
+<!-- /.content -->
+@section script {
+<script>
+    pageInit();
+    function pageInit() {
+        loadCategories();
+        $('#btn-create').click(createProduct);
+    }
+
+    function discountUnitChange(inp) {
+        var val = $(inp).val();
+        if (val == "VND") {
+            $('#inp-discount').val(null);
+            $('#inp-discount').attr('name', 'discount_amount');
+            $('#inp-discount').attr('step', '1000');
+            $('#inp-discount').removeAttr('max');
+        } else {
+            $('#inp-discount').val(null);
+            $('#inp-discount').attr('name', 'discount_percent');
+            $('#inp-discount').attr('step', '1');
+            $('#inp-discount').attr('max', '100');
+        }
+    }
+
+    //categories
+    var cates = {};
+    function addCate() {
+        var select = $('#select-categories');
+        var val = select.val();
+        var text = select.find('option:selected').text();
+        if (cates[val])
+            return;
+        cates[val] = text;
+        $('#categories').append(
+            $('<div>').append('&nbsp;&nbsp;&nbsp;')
+                .append(text).append('&nbsp;&nbsp;&nbsp;')
+                .append(
+                    $('<a href="#" onclick="removeCate(this, \'' + val + '\')">X</a>')
+                ).append(
+                    $('<input type="hidden" name="categories_id[]" value="' + val + '" />')
+                )
+        );
+    }
+
+    function removeCate(a, val) {
+        cates[val] = null;
+        $(a).parent().remove();
+    }
+    //./categories
+
+    function createProduct() {
+        var formData = new FormData($('form')[0]);
+        $.ajax({
+            url: '/api/products',
+            type: 'post',
+            contentType: false,
+            processData: false,
+            cache: false,
+            data: formData,
+            success: (data) => {
+                Swal.fire({
+                    type: 'success',
+                    title: 'Message',
+                    text: 'Tạo thành công',
+                }).then(() => {
+                    location.replace('/admin/product/');
+                });
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+                Swal.fire({
+                    type: 'error',
+                    title: 'Message',
+                    text: data.message,
+                });
+            }
+        });
+    }
+
+    function loadCategories() {
+
+        function addCategoryOption(cate) {
+            $('#select-categories').append(
+                $('<option value="' + cate.id + '">').append(cate.name)
+            );
+        }
+
+        $.ajax({
+            url: '/api/product-categories',
+            type: 'get',
+            success: (data) => {
+                for (var i = 0; i < data.length; i++) {
+                    addCategoryOption(data[i]);
+                }
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+                Swal.fire({
+                    type: 'error',
+                    title: 'Message',
+                    text: data.message,
+                });
+            }
+        });
+    }
+
+</script>
+
+}
