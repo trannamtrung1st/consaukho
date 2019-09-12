@@ -210,6 +210,12 @@
         pageInit();
 
         function pageInit() {
+            $.ajaxSetup({
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + JSON.parse(localStorage['token']).access_token);
+                }
+            });
+
             checkLogin();
             $('#btn-signout').click(signOut);
         }

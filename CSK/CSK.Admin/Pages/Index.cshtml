@@ -3,240 +3,275 @@
 @{
 }
 
+@section style{
+<style>
+    #lo-banner, #lo-banner-bottom {
+        transition: filter 0.5s;
+    }
 
-<div class="site-blocks-cover" data-aos="fade">
+        #lo-banner:hover, #lo-banner-bottom:hover {
+            cursor: pointer;
+            filter: saturate(150%);
+        }
+
+    .product-category {
+        width: 200px;
+    }
+
+    .discount{
+        background-color: orange;
+        border-radius:20px;
+        padding: 0 10px;
+    }
+
+    .popular-product{
+        bottom:0;
+        transition: bottom 0.25s;
+    }
+    .popular-product:hover{
+        bottom:20px;
+    }
+
+    #popular-products img{
+        margin-bottom: 10px;
+    }
+</style>
+}
+
+<div id="lo-banner" class="site-blocks-cover" data-aos="fade">
     <div class="container">
         <div class="row">
             <div class="col-md-6 ml-auto order-md-2 align-self-start">
                 <div class="site-block-cover-content">
-                    <h2 class="sub-title">#New Summer Collection 2019</h2>
-                    <h1>Arrivals Sales</h1>
-                    <p><a href="#" class="btn btn-black rounded-0">Shop Now</a></p>
+                    <h2 class="sub-title" id="lo-banner-text-1">#New Summer Collection 2019</h2>
+                    <h1 id="lo-banner-text-2">Arrivals Sales</h1>
+                    <p><a href="#" id="lo-banner-link-3" class="btn btn-black rounded-0">Shop Now</a></p>
                 </div>
             </div>
             <div class="col-md-6 order-1 align-self-end">
-                <img src="/images/model_3.png" alt="Image" class="img-fluid">
+                <img id="lo-banner-img" src="/images/model_3.png" alt="Image" class="img-fluid">
             </div>
         </div>
     </div>
 </div>
 
-<div class="site-section">
+<div id="lo-categories" class="site-section">
     <div class="container">
         <div class="title-section mb-5">
-            <h2 class="text-uppercase"><span class="d-block">Discover</span> The Collections</h2>
+            <h2 class="text-uppercase" id="lo-categories-title"><span class="d-block">Discover</span> The Collections</h2>
         </div>
         <div class="row align-items-stretch">
             <div class="col-lg-8">
                 <div class="product-item sm-height full-height bg-gray">
-                    <a href="#" class="product-category">Women <span>25 items</span></a>
-                    <img src="/images/model_4.png" alt="Image" class="img-fluid">
+                    <a href="#" id="lo-categories-cate-1-name" class="product-category">Women <span>25 items</span></a>
+                    <img id="lo-categories-cate-1-img" src="/images/model_4.png" alt="Image" class="img-fluid">
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="product-item sm-height bg-gray mb-4">
-                    <a href="#" class="product-category">Men <span>25 items</span></a>
-                    <img src="/images/model_5.png" alt="Image" class="img-fluid">
+                    <a href="#" id="lo-categories-cate-2-name" class="product-category">Men <span>25 items</span></a>
+                    <img id="lo-categories-cate-2-img" src="/images/model_5.png" alt="Image" class="img-fluid">
                 </div>
 
                 <div class="product-item sm-height bg-gray">
-                    <a href="#" class="product-category">Shoes <span>25 items</span></a>
-                    <img src="/images/model_6.png" alt="Image" class="img-fluid">
+                    <a href="#" id="lo-categories-cate-3-name" class="product-category">Shoes <span>25 items</span></a>
+                    <img id="lo-categories-cate-3-img" src="/images/model_6.png" alt="Image" class="img-fluid">
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
 
 <div class="site-section">
     <div class="container">
         <div class="row">
             <div class="title-section mb-5 col-12">
-                <h2 class="text-uppercase">Popular Products</h2>
+                <h2 class="text-uppercase">Sản phẩm phổ biến</h2>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-4 col-md-6 item-entry mb-4">
-                <a href="#" class="product-item md-height bg-gray d-block">
-                    <img src="/images/prod_2.png" alt="Image" class="img-fluid">
-                </a>
-                <h2 class="item-title"><a href="#">Gray Shoe</a></h2>
-                <strong class="item-price">$20.00</strong>
-            </div>
-            <div class="col-lg-4 col-md-6 item-entry mb-4">
-                <a href="#" class="product-item md-height bg-gray d-block">
-                    <img src="/images/prod_3.png" alt="Image" class="img-fluid">
-                </a>
-                <h2 class="item-title"><a href="#">Blue Shoe High Heels</a></h2>
-                <strong class="item-price"><del>$46.00</del> $28.00</strong>
-            </div>
-
-            <div class="col-lg-4 col-md-6 item-entry mb-4">
-                <a href="#" class="product-item md-height bg-gray d-block">
-                    <img src="/images/model_5.png" alt="Image" class="img-fluid">
-                </a>
-                <h2 class="item-title"><a href="#">Denim Jacket</a></h2>
-                <strong class="item-price"><del>$46.00</del> $28.00</strong>
-
-                <div class="star-rating">
-                    <span class="icon-star2 text-warning"></span>
-                    <span class="icon-star2 text-warning"></span>
-                    <span class="icon-star2 text-warning"></span>
-                    <span class="icon-star2 text-warning"></span>
-                    <span class="icon-star2 text-warning"></span>
-                </div>
-
-            </div>
-            <div class="col-lg-4 col-md-6 item-entry mb-4">
-                <a href="#" class="product-item md-height bg-gray d-block">
-                    <img src="/images/prod_1.png" alt="Image" class="img-fluid">
-                </a>
-                <h2 class="item-title"><a href="#">Leather Green Bag</a></h2>
-                <strong class="item-price"><del>$46.00</del> $28.00</strong>
-                <div class="star-rating">
-                    <span class="icon-star2 text-warning"></span>
-                    <span class="icon-star2 text-warning"></span>
-                    <span class="icon-star2 text-warning"></span>
-                    <span class="icon-star2 text-warning"></span>
-                    <span class="icon-star2 text-warning"></span>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 item-entry mb-4">
-                <a href="#" class="product-item md-height bg-gray d-block">
-                    <img src="/images/model_1.png" alt="Image" class="img-fluid">
-                </a>
-                <h2 class="item-title"><a href="#">Smooth Cloth</a></h2>
-                <strong class="item-price"><del>$46.00</del> $28.00</strong>
-            </div>
-            <div class="col-lg-4 col-md-6 item-entry mb-4">
-                <a href="#" class="product-item md-height bg-gray d-block">
-                    <img src="/images/model_7.png" alt="Image" class="img-fluid">
-                </a>
-                <h2 class="item-title"><a href="#">Yellow Jacket</a></h2>
-                <strong class="item-price">$58.00</strong>
-            </div>
+        <div class="row" id="popular-products">
 
         </div>
     </div>
 </div>
 
-<div class="site-section">
-    <div class="container">
-        <div class="row">
-            <div class="title-section text-center mb-5 col-12">
-                <h2 class="text-uppercase">Most Rated</h2>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 block-3">
-                <div class="nonloop-block-3 owl-carousel">
-                    <div class="item">
-                        <div class="item-entry">
-                            <a href="#" class="product-item md-height bg-gray d-block">
-                                <img src="/images/model_1.png" alt="Image" class="img-fluid">
-                            </a>
-                            <h2 class="item-title"><a href="#">Smooth Cloth</a></h2>
-                            <strong class="item-price"><del>$46.00</del> $28.00</strong>
-                            <div class="star-rating">
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-entry">
-                            <a href="#" class="product-item md-height bg-gray d-block">
-                                <img src="/images/prod_3.png" alt="Image" class="img-fluid">
-                            </a>
-                            <h2 class="item-title"><a href="#">Blue Shoe High Heels</a></h2>
-                            <strong class="item-price"><del>$46.00</del> $28.00</strong>
-
-                            <div class="star-rating">
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-entry">
-                            <a href="#" class="product-item md-height bg-gray d-block">
-                                <img src="/images/model_5.png" alt="Image" class="img-fluid">
-                            </a>
-                            <h2 class="item-title"><a href="#">Denim Jacket</a></h2>
-                            <strong class="item-price"><del>$46.00</del> $28.00</strong>
-
-                            <div class="star-rating">
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-entry">
-                            <a href="#" class="product-item md-height bg-gray d-block">
-                                <img src="/images/prod_1.png" alt="Image" class="img-fluid">
-                            </a>
-                            <h2 class="item-title"><a href="#">Leather Green Bag</a></h2>
-                            <strong class="item-price"><del>$46.00</del> $28.00</strong>
-                            <div class="star-rating">
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-entry">
-                            <a href="#" class="product-item md-height bg-gray d-block">
-                                <img src="/images/model_7.png" alt="Image" class="img-fluid">
-                            </a>
-                            <h2 class="item-title"><a href="#">Yellow Jacket</a></h2>
-                            <strong class="item-price">$58.00</strong>
-                            <div class="star-rating">
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                                <span class="icon-star2 text-warning"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="site-blocks-cover inner-page py-5" data-aos="fade">
+<div id="lo-banner-bottom" class="site-blocks-cover inner-page py-5" data-aos="fade">
     <div class="container">
         <div class="row">
             <div class="col-md-6 ml-auto order-md-2 align-self-start">
                 <div class="site-block-cover-content">
-                    <h2 class="sub-title">#New Summer Collection 2019</h2>
-                    <h1>New Shoes</h1>
-                    <p><a href="#" class="btn btn-black rounded-0">Shop Now</a></p>
+                    <h2 id="lo-banner-bottom-text-1" class="sub-title">#New Summer Collection 2019</h2>
+                    <h1 id="lo-banner-bottom-text-2">New Shoes</h1>
+                    <p><a href="#" id="lo-banner-bottom-link-3" class="btn btn-black rounded-0">Shop Now</a></p>
                 </div>
             </div>
             <div class="col-md-6 order-1 align-self-end">
-                <img src="/images/model_6.png" alt="Image" class="img-fluid">
+                <img id="lo-banner-bottom-img" src="/images/model_6.png" alt="Image" class="img-fluid">
             </div>
         </div>
     </div>
 </div>
+
+@section script_layout{
+<script>
+    pageInit();
+    function pageInit() {
+        loadPopularProducts();
+    }
+
+    function setLayout() {
+        if (!localStorage["layout"])
+            return false;
+        var cacheLayout = JSON.parse(localStorage["layout"]);
+
+        try {
+            var banner = cacheLayout.banner;
+            if (!banner.visible) {
+                $('#lo-banner').remove();
+            } else {
+                if (banner.text_1.visible) {
+                    $('#lo-banner-text-1').text(banner.text_1.value);
+                } else {
+                    $('#lo-banner-text-1').remove();
+                }
+                if (banner.text_2.visible) {
+                    $('#lo-banner-text-2').text(banner.text_2.value);
+                } else {
+                    $('#lo-banner-text-2').remove();
+                }
+                if (banner.link_3.visible) {
+                    $('#lo-banner-link-3').text(banner.link_3.value);
+                    $('#lo-banner-link-3').attr('href', banner.link_3.link);
+                    $('#lo-banner').click(() => location.href = banner.link_3.link);
+                } else {
+                    $('#lo-banner-link-3').remove();
+                }
+                if (banner.img)
+                    $("#lo-banner-img").attr('src', banner.img);
+            }
+        } catch (e) { }
+
+        try {
+            var categories = cacheLayout.categories;
+            if (!categories.visible) {
+                $('#lo-categories').remove();
+            } else {
+                if (categories.title) {
+                    var lines = categories.title.split('\n');
+                    var newStr = '';
+                    for (var i = 0; i < lines.length; i++) {
+                        newStr += '<div>' + lines[i] + '</div>';
+                    }
+                    $('#lo-categories-title').html(newStr);
+                }
+                if (categories.cate1) {
+                    var cate = categories.cate1;
+                    $('#lo-categories-cate-1-name').html(cate.name + ' <span>' + cate.pcount + ' ' + cate.unit_name + '</span>');
+                    $('#lo-categories-cate-1-img').attr('src', cate.image_url);
+                }
+                if (categories.cate2) {
+                    var cate = categories.cate2;
+                    $('#lo-categories-cate-2-name').html(cate.name + ' <span>' + cate.pcount + ' ' + cate.unit_name + '</span>');
+                    $('#lo-categories-cate-2-img').attr('src', cate.image_url);
+                }
+                if (categories.cate3) {
+                    var cate = categories.cate3;
+                    $('#lo-categories-cate-3-name').html(cate.name + ' <span>' + cate.pcount + ' ' + cate.unit_name + '</span>');
+                    $('#lo-categories-cate-3-img').attr('src', cate.image_url);
+                }
+            }
+        } catch (e) { }
+
+        try {
+            var bannerBottom = cacheLayout.banner_bottom;
+            if (!bannerBottom.visible) {
+                $('#lo-banner-bottom').remove();
+            } else {
+                if (bannerBottom.text_1.visible) {
+                    $('#lo-banner-bottom-text-1').text(bannerBottom.text_1.value);
+                } else {
+                    $('#lo-banner-bottom-text-1').remove();
+                }
+                if (bannerBottom.text_2.visible) {
+                    $('#lo-banner-bottom-text-2').text(bannerBottom.text_2.value);
+                } else {
+                    $('#lo-banner-bottom-text-2').remove();
+                }
+                if (bannerBottom.link_3.visible) {
+                    $('#lo-banner-bottom-link-3').text(bannerBottom.link_3.value);
+                    $('#lo-banner-bottom-link-3').attr('href', bannerBottom.link_3.link);
+                    $('#lo-banner-bottom').click(() => location.href = bannerBottom.link_3.link);
+                } else {
+                    $('#lo-banner-bottom-link-3').remove();
+                }
+                if (banner.img)
+                    $("#lo-banner-bottom-img").attr('src', bannerBottom.img);
+            }
+        } catch (e) { }
+
+        return true;
+    }
+
+    function loadPopularProducts() {
+        $.ajax({
+            url: '/api/products?fields=info&popular=true&take=6&visible=true',
+            type: 'get',
+            success: (data) => {
+                console.log(data);
+                for (var i = 0; i < data.length; i++) {
+                    var price = $('<strong class="item-price">');
+                    if (data[i].discount_amount) {
+                        var unit = data[i].unit_price.toString();
+                        var discount = data[i].discount_amount.toString();
+                        var final = (data[i].unit_price - data[i].discount_amount).toString();
+                        price.append(
+                            $('<del>' + toMoneyFormat(unit) + '</del>')
+                        ).append(' ' + toMoneyFormat(final)).append('&nbsp;&nbsp;&nbsp;').append(
+                            $('<span class="discount">-' + toMoneyFormat(discount) + '</span>')
+                        );
+                    } else if (data[i].discount_percent) {
+                        var unit = data[i].unit_price.toString();
+                        var discount = data[i].discount_percent.toString();
+                        var final = (data[i].unit_price - data[i].discount_percent * data[i].unit_price / 100).toString();
+                        price.append(
+                            $('<del>' + toMoneyFormat(unit) + '</del> ')
+                        ).append(' '+ toMoneyFormat(final)).append('&nbsp;&nbsp;&nbsp;').append(
+                            $('<span class="discount">-' + discount + '%</span>')
+                        );
+                    } else {
+                        var unit = data[i].unit_price.toString();
+                        price.append(toMoneyFormat(unit));
+                    }
+
+                    $('#popular-products').append(
+                        $('<div class="popular-product col-lg-4 col-md-6 item-entry mb-4">').append(
+                            $('<a href="#" class="d-block">').append(
+                                $('<img src="' + (data[i].image_urls? data[i].image_urls[0] : '') + '" alt="Image" class="img-fluid">')
+                            )
+                        ).append(
+                            $('<h2 class="item-title"><a href="#">' + data[i].name + '</a></h2>')
+                        ).append(
+                            price
+                        )
+                    )
+                }
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+            }
+        });
+    }
+
+</script>
+}
+
+@section script{
+<script>
+    pageInit();
+
+    function pageInit() {
+    }
+
+</script>
+}

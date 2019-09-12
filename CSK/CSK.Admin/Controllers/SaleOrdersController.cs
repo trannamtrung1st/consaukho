@@ -9,6 +9,7 @@ using System.Web;
 using CSK.Data;
 using CSK.Data.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -64,6 +65,7 @@ namespace CSK.Admin.Controllers
             };
         }
 
+        [Authorize]
         [HttpPatch("{id}/status")]
         public IActionResult ProcessOrder(string id, string value)
         {
@@ -111,7 +113,6 @@ namespace CSK.Admin.Controllers
                 });
             }
         }
-
 
         [HttpPost("cart")]
         public IActionResult CheckCart(CartViewModel model)
@@ -256,6 +257,7 @@ namespace CSK.Admin.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("")]
         public IActionResult Create(CreateSaleOrderViewModel model)
         {

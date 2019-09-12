@@ -9,6 +9,7 @@ using System.Web;
 using CSK.Data;
 using CSK.Data.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -28,6 +29,7 @@ namespace CSK.Admin.Controllers
         {
         }
 
+        [Authorize]
         [HttpPost("")]
         public IActionResult Create([FromForm]CreateCategoryViewModel model)
         {
@@ -78,6 +80,7 @@ namespace CSK.Admin.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("{id}")]
         public IActionResult Edit(string id,
             [FromForm]EditCategoryViewModel model)
@@ -176,6 +179,7 @@ namespace CSK.Admin.Controllers
 
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetById(string id)
         {
@@ -209,6 +213,7 @@ namespace CSK.Admin.Controllers
 
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {

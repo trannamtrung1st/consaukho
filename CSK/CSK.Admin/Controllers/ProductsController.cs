@@ -9,6 +9,7 @@ using System.Web;
 using CSK.Data;
 using CSK.Data.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -29,6 +30,7 @@ namespace CSK.Admin.Controllers
         {
         }
 
+        [Authorize]
         [HttpPost("")]
         public IActionResult Create([FromForm]CreateProductViewModel model)
         {
@@ -105,6 +107,7 @@ namespace CSK.Admin.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("{id}")]
         public IActionResult Edit(string id,
             [FromForm]EditProductViewModel model)
@@ -186,11 +189,20 @@ namespace CSK.Admin.Controllers
         }
 
         [HttpGet("")]
-        public IActionResult Get([FromQuery]string[] fields)
+        public IActionResult Get([FromQuery]string[] fields, bool? visible,
+            bool? popular, int page = 0, int limit = 0)
         {
             try
             {
-                var pros = _context.Products.Where(p => p.Active == true).ToList();
+                var query = _context.Products.Where(p => p.Active == true);
+                if (popular == true)
+                    query = query.OrderByDescending(p => p.SaleOrderDetails.Count);
+                if (visible == true)
+                    query = query.Where(p => p.IsVisible == true);
+                if (limit > 0)
+                    query = query.Skip(page * limit).Take(limit);
+
+                var pros = query.ToList();
                 if (fields == null || fields.Length == 0)
                     fields = new string[] { "info" };
                 var list = new List<IDictionary<string, object>>();
@@ -291,6 +303,7 @@ namespace CSK.Admin.Controllers
 
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {

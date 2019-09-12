@@ -23,6 +23,7 @@ namespace CSK.Data.Models
         public virtual DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
+        public virtual DbSet<BrandInfo> BrandInfo { get; set; }
         public virtual DbSet<CategoriesOfProducts> CategoriesOfProducts { get; set; }
         public virtual DbSet<Customers> Customers { get; set; }
         public virtual DbSet<ProductCategories> ProductCategories { get; set; }
@@ -168,6 +169,14 @@ namespace CSK.Data.Models
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
 
                 entity.Property(e => e.UserName).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<BrandInfo>(entity =>
+            {
+                entity.Property(e => e.Id)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .ValueGeneratedNever();
             });
 
             modelBuilder.Entity<CategoriesOfProducts>(entity =>

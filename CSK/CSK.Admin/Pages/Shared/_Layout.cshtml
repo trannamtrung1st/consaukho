@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Con Sâu Khô &mdash; Colorlib e-Commerce Template</title>
+    <title>Con Sâu Khô</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -19,6 +19,12 @@
 
     <link rel="stylesheet" href="/css/style.css">
 
+    <style>
+        body {
+            font-family: Calibri;
+        }
+    </style>
+
     @RenderSection("style", false)
 
 </head>
@@ -32,7 +38,7 @@
                 <div class="container">
                     <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
                     <form action="#" method="post">
-                        <input type="text" class="form-control" placeholder="Search keyword and hit enter...">
+                        <input type="text" class="form-control" placeholder="TÌM VÀ NHẤN ENTER">
                     </form>
                 </div>
             </div>
@@ -41,7 +47,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="logo">
                         <div class="site-logo">
-                            <a href="index.html" class="js-logo-clone">Con Sâu Khô</a>
+                            <a href="/" class="js-logo-clone">Con Sâu Khô</a>
                         </div>
                     </div>
                     <div class="main-nav d-none d-lg-block">
@@ -80,51 +86,38 @@
         <footer class="site-footer custom-border-top">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
-                        <h3 class="footer-heading mb-4">Promo</h3>
+                    <div id="lo-footer-promo" class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                        <h3 class="footer-heading mb-4">BÀI ĐĂNG</h3>
                         <a href="#" class="block-6">
-                            <img src="/images/about_1.jpg" alt="Image placeholder" class="img-fluid rounded mb-4">
-                            <h3 class="font-weight-light  mb-0">Finding Your Perfect Shirts This Summer</h3>
-                            <p>Promo from  July 15 &mdash; 25, 2019</p>
+                            <img id="lo-footer-promo-img" src="/images/about_1.jpg" alt="Image placeholder" class="img-fluid rounded mb-4">
+                            <h3 id="lo-footer-promo-title" class="font-weight-light  mb-0">Finding Your Perfect Shirts This Summer</h3>
+                            <p id="lo-footer-promo-short-description">Promo from  July 15 &mdash; 25, 2019</p>
                         </a>
                     </div>
-                    <div class="col-lg-5 ml-auto mb-5 mb-lg-0">
+                    <div id="lo-footer-quick-links" class="col-lg-5 ml-auto mb-5 mb-lg-0">
                         <div class="row">
                             <div class="col-md-12">
                                 <h3 class="footer-heading mb-4">Quick Links</h3>
                             </div>
                             <div class="col-md-6 col-lg-4">
-                                <ul class="list-unstyled">
-                                    <li><a href="#">Sell online</a></li>
-                                    <li><a href="#">Features</a></li>
-                                    <li><a href="#">Shopping cart</a></li>
-                                    <li><a href="#">Store builder</a></li>
-                                </ul>
+                                <ul id="lo-footer-quick-links-0" class="list-unstyled"></ul>
                             </div>
                             <div class="col-md-6 col-lg-4">
-                                <ul class="list-unstyled">
-                                    <li><a href="#">Mobile commerce</a></li>
-                                    <li><a href="#">Dropshipping</a></li>
-                                    <li><a href="#">Website development</a></li>
-                                </ul>
+                                <ul id="lo-footer-quick-links-1" class="list-unstyled"></ul>
                             </div>
                             <div class="col-md-6 col-lg-4">
-                                <ul class="list-unstyled">
-                                    <li><a href="#">Point of sale</a></li>
-                                    <li><a href="#">Hardware</a></li>
-                                    <li><a href="#">Software</a></li>
-                                </ul>
+                                <ul id="lo-footer-quick-links-2" class="list-unstyled"></ul>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-6 col-lg-3">
+                    <div id="lo-footer-contact" class="col-md-6 col-lg-3">
                         <div class="block-5 mb-5">
                             <h3 class="footer-heading mb-4">Contact Info</h3>
                             <ul class="list-unstyled">
-                                <li class="address">203 Fake St. Mountain View, San Francisco, California, USA</li>
-                                <li class="phone"><a href="tel://23923929210">+2 392 3929 210</a></li>
-                                <li class="email">emailaddress@domain.com</li>
+                                <li id="lo-footer-contact-address" class="address">203 Fake St. Mountain View, San Francisco, California, USA</li>
+                                <li id="lo-footer-contact-phone" class="phone"><a href="tel://23923929210">+2 392 3929 210</a></li>
+                                <li id="lo-footer-contact-email" class="email">emailaddress@domain.com</li>
                             </ul>
                         </div>
 
@@ -161,6 +154,195 @@
     <script src="/js/owl.carousel.min.js"></script>
     <script src="/js/jquery.magnific-popup.min.js"></script>
     <script src="/js/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
+    @RenderSection("script_layout", false)
+
+    <script>
+        layoutInit();
+        
+        function toMoneyFormat(str) {
+            var count = 0;
+            var newStr = "";
+            var money, frac;
+            if (str.indexOf('.') > -1) {
+                money = str.substring(0, str.lastIndexOf('.'));
+                frac = str.substring(str.lastIndexOf('.'));
+            }
+            else {
+                money = str;
+                frac = '';
+            }
+            for (var i = money.length - 1; i >= 0; i--) {
+                if (count++ == 3) {
+                    newStr = ',' + newStr;
+                    count = 1;
+                }
+                newStr = money[i] + newStr;
+            }
+            return newStr + frac;
+        }
+
+
+        function layoutInit() {
+            loadLayout();
+        }
+
+        function loadLayout() {
+            var isSet = setLayout();
+
+            $.ajax({
+                url: '/api/brand-info?fields=layout',
+                type: 'get',
+                success: (data) => {
+                    //localStorage['layout'] = JSON.stringify(data.layout);
+
+                    var cacheLayout = {
+                        banner: {
+                            visible: true,
+                            text_1: {
+                                value: 'Bộ sưu tập mùa hè',
+                                visible: true
+                            },
+                            text_2: {
+                                value: 'BIG SALES OFF',
+                                visible: true
+                            },
+                            link_3: {
+                                value: 'Mua ngay',
+                                visible: true,
+                                link: '/admin',
+                            },
+                            img: '/images/model_3.png'
+                        },
+                        categories: {
+                            visible: true,
+                            title: 'Bộ sưu tập',
+                            cate1: {
+                                id: '1',
+                                name: 'Hoa bó',
+                                unit_name: 'bó',
+                                pcount: 24,
+                                image_url: '/images/model_4.png'
+                            },
+                            cate2: {
+                                id: '2',
+                                name: 'Hoa lan',
+                                unit_name: 'chiếc',
+                                pcount: 22,
+                                image_url: '/images/model_5.png'
+                            },
+                            cate3: {
+                                id: '3',
+                                name: 'Hoa loa kèn',
+                                unit_name: 'cái',
+                                pcount: 10,
+                                image_url: '/images/model_6.png'
+                            }
+                        },
+                        banner_bottom: {
+                            visible: true,
+                            text_1: {
+                                value: 'Bộ sưu tập mùa hè',
+                                visible: true
+                            },
+                            text_2: {
+                                value: 'BIG SALES OFF',
+                                visible: true
+                            },
+                            link_3: {
+                                value: 'Mua ngay',
+                                visible: true,
+                                link: '/admin',
+                            },
+                            img: '/images/model_6.png'
+                        },
+                        footer: {
+                            promo: {
+                                visible: true,
+                                img: '/images/model_4.png',
+                                title: 'Tìm cái hay nhất',
+                                short_description: 'Từ hôm nay tới hết CN',
+                                link: '/'
+                            },
+                            quick_links: {
+                                visible: true,
+                                links: [
+                                    {
+                                        title: 'Fanpage 1',
+                                        link: '/'
+                                    },
+                                    {
+                                        title: 'Fanpage 2',
+                                        link: '/'
+                                    },
+                                    {
+                                        title: 'Fanpage 3',
+                                        link: '/'
+                                    },
+                                    {
+                                        title: 'Fanpage 4',
+                                        link: '/'
+                                    }
+                                ]
+                            },
+                            contact: {
+                                visible: true,
+                                address: '14 Khiếu Năng Tĩnh',
+                                phone: '09125284522',
+                                email: 'trannamtrung1st@gmail.com'
+                            }
+                        }
+                    };
+                    localStorage['layout'] = JSON.stringify(cacheLayout);
+
+                    if (!isSet)
+                        setLayout();
+
+                    var footer = cacheLayout.footer;
+                    if (!footer.promo.visible) {
+                        $('#lo-footer-promo').remove();
+                    } else {
+                        $('#lo-footer-promo-title').text(footer.promo.title);
+                        $('#lo-footer-promo-img').attr('src', footer.promo.img);
+                        $('#lo-footer-promo-short-description').text(footer.promo.short_description);
+                    }
+
+                    if (!footer.contact.visible) {
+                        $('#lo-footer-contact').remove();
+                    } else {
+                        var contact = footer.contact;
+                        $('#lo-footer-contact-address').html('<a href="https://www.google.com/maps/search/' + contact.address + '/">' + contact.address + '</a>');
+                        $('#lo-footer-contact-phone').text(footer.contact.phone);
+                        $('#lo-footer-contact-email').text(footer.contact.email);
+                    }
+
+                    if (!footer.quick_links.visible) {
+                        $('#lo-footer-quick-links').remove();
+                    } else {
+                        var links = footer.quick_links.links;
+                        var j = 0;
+                        var count = 0;
+                        while (j < links.length) {
+                            $('#lo-footer-quick-links-' + count++).append(
+                                $('<li><a href="' +
+                                    links[j].link + '">' + links[j].title + '</a></li>')
+                            );
+                            if (count == 3)
+                                count = 0;
+                            j++;
+                        }
+                    }
+
+
+                },
+                error: (data) => {
+                    console.log(data);
+                    data = data.responseJSON;
+                }
+            });
+        }
+    </script>
 
     @RenderSection("script", false)
 
