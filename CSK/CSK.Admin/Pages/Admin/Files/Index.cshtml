@@ -94,10 +94,31 @@
     <script>
         var dataPath;
         pageInit();
+
+
+        function checkLogin() {
+            if (!localStorage['token'])
+                location.replace('/admin/login/');
+            else {
+                var token = JSON.parse(localStorage['token']);
+                var expire = new Date(token.expires_utc);
+                if (expire <= new Date()) {
+                    localStorage.removeItem('token');
+                    location.replace('/admin/login/');
+                }
+                else {
+                    $('.username-text').text(token.username);
+                    $('body').show();
+                }
+            }
+        }
+
         function pageInit() {
+            checkLogin();
             $.ajaxSetup({
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader('Authorization', 'Bearer ' + JSON.parse(localStorage['token']).access_token);
+                    if (localStorage['token'])
+                        xhr.setRequestHeader('Authorization', 'Bearer ' + JSON.parse(localStorage['token']).access_token);
                 }
             });
             dataPath = '/api/files/list';

@@ -223,7 +223,8 @@
         function pageInit() {
             $.ajaxSetup({
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader('Authorization', 'Bearer ' + JSON.parse(localStorage['token']).access_token);
+                    if (localStorage['token'])
+                        xhr.setRequestHeader('Authorization', 'Bearer ' + JSON.parse(localStorage['token']).access_token);
                 }
             });
 
