@@ -254,7 +254,7 @@ $(function () {
 
 
         // Render the HTML for the file manager
-
+        
         function render(data) {
 
             var scannedFolders = [],
@@ -324,6 +324,7 @@ $(function () {
 
             }
 
+            var imgExtensions = ['.jpg', '.gif', '.jpeg', '.png', '.bmp', '.tiff', '.svg'];
             if (scannedFiles.length) {
 
                 scannedFiles.forEach(function (f) {
@@ -342,7 +343,7 @@ $(function () {
                     file.append('<button type="button" class="btn-edit-name" onclick="renameFile(this)">Sửa tên</button>');
                     file.append('<button type="button" class="btn-link" onclick="getLink(this)">Link</button>');
 
-                    if (f.extension == '.jpg')
+                    if (f.extension && imgExtensions.indexOf(f.extension) > -1)
                         file.append(
                             $('<img style="height:67%;width:100%;margin-top:80px;" src="/api/files?path=' + relativePath + '">')
                         );

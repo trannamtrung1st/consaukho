@@ -37,13 +37,14 @@ namespace CSK.Admin.Controllers
 
         [Authorize]
         [HttpPost("")]
-        public IActionResult Create(string path, IFormFile file)
+        public IActionResult Create(string path, IFormFile[] files)
         {
             path = App.Instance.DataPath + path;
-            using (var stream = new FileStream(path + "/" + file.FileName, FileMode.Create))
-            {
-                file.CopyTo(stream);
-            }
+            foreach (var f in files)
+                using (var stream = new FileStream(path + "/" + f.FileName, FileMode.Create))
+                {
+                    f.CopyTo(stream);
+                }
             return Ok();
         }
 
