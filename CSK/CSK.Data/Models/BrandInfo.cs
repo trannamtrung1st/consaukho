@@ -7,5 +7,6 @@ namespace CSK.Data.Models
     {
         public string Id { get; set; }
         public string HomePageLayout { get; set; }
+        public string HomePageLayoutBackup { get; set; }
     }
 }

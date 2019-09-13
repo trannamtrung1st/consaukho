@@ -195,108 +195,13 @@
                 url: '/api/brand-info?fields=layout',
                 type: 'get',
                 success: (data) => {
-                    //localStorage['layout'] = JSON.stringify(data.layout);
+                    data = data.layout;
 
-                    var cacheLayout = {
-                        banner: {
-                            visible: true,
-                            text_1: {
-                                value: 'Bộ sưu tập mùa hè',
-                                visible: true
-                            },
-                            text_2: {
-                                value: 'BIG SALES OFF',
-                                visible: true
-                            },
-                            link_3: {
-                                value: 'Mua ngay',
-                                visible: true,
-                                link: '/admin',
-                            },
-                            img: '/images/model_3.png'
-                        },
-                        categories: {
-                            visible: true,
-                            title: 'Bộ sưu tập',
-                            cate1: {
-                                id: '1',
-                                name: 'Hoa bó',
-                                pcount: 24,
-                                image_url: '/images/model_4.png'
-                            },
-                            cate2: {
-                                id: '2',
-                                name: 'Hoa lan',
-                                pcount: 22,
-                                image_url: '/images/model_5.png'
-                            },
-                            cate3: {
-                                id: '3',
-                                name: 'Hoa loa kèn',
-                                pcount: 10,
-                                image_url: '/images/model_6.png'
-                            }
-                        },
-                        banner_bottom: {
-                            visible: true,
-                            text_1: {
-                                value: 'Bộ sưu tập mùa hè',
-                                visible: true
-                            },
-                            text_2: {
-                                value: 'BIG SALES OFF',
-                                visible: true
-                            },
-                            link_3: {
-                                value: 'Mua ngay',
-                                visible: true,
-                                link: '/admin',
-                            },
-                            img: '/images/model_6.png'
-                        },
-                        footer: {
-                            promo: {
-                                visible: true,
-                                img: '/images/model_4.png',
-                                title: 'Tìm cái hay nhất',
-                                short_description: 'Từ hôm nay tới hết CN',
-                                link: '/'
-                            },
-                            quick_links: {
-                                visible: true,
-                                links: [
-                                    {
-                                        title: 'Fanpage 1',
-                                        link: '/'
-                                    },
-                                    {
-                                        title: 'Fanpage 2',
-                                        link: '/'
-                                    },
-                                    {
-                                        title: 'Fanpage 3',
-                                        link: '/'
-                                    },
-                                    {
-                                        title: 'Fanpage 4',
-                                        link: '/'
-                                    }
-                                ]
-                            },
-                            contact: {
-                                visible: true,
-                                address: '14 Khiếu Năng Tĩnh',
-                                phone: '09125284522',
-                                email: 'trannamtrung1st@gmail.com'
-                            }
-                        }
-                    };
-                    localStorage['layout'] = JSON.stringify(cacheLayout);
-
+                    localStorage['layout'] = JSON.stringify(data);
                     if (!isSet)
                         setLayout();
 
-                    var footer = cacheLayout.footer;
+                    var footer = data.footer;
                     if (!footer.promo.visible) {
                         $('#lo-footer-promo').remove();
                     } else {

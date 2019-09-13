@@ -34,27 +34,9 @@ namespace CSK.Admin.Controllers
         [HttpPost("")]
         public IActionResult Create([FromForm]CreateProductViewModel model)
         {
-            string id = Guid.NewGuid().ToString();
-            var wwwRoot = App.Instance.DataPath;
-            var relativePath = $"/uploads/product/{id}/";
-            var localFolder = wwwRoot + relativePath;
-            List<string> imageUrls = null;
             try
             {
-                if (model.images != null)
-                {
-                    imageUrls = new List<string>();
-                    var count = 1;
-                    if (System.IO.Directory.Exists(localFolder))
-                        System.IO.Directory.Delete(localFolder, true);
-                    foreach (var file in model.images)
-                    {
-                        var fileName = file.FileName;
-                        var fileUploadResult = FileUploadHelper.Save(file, wwwRoot, relativePath, $"image{count++}.jpg").Result;
-                        imageUrls.Add($"/api/files?path={HttpUtility.UrlEncode(fileUploadResult.RelativePath)}");
-                    }
-                }
-
+                var id = Guid.NewGuid().ToString();
                 var categories = new List<CategoriesOfProducts>();
                 if (model.categories_id != null)
                     foreach (var c in model.categories_id)
@@ -64,14 +46,17 @@ namespace CSK.Admin.Controllers
                             ProductId = id
                         });
 
+                var urls = new List<string>();
+                if (model.image_urls != null)
+                    foreach (var l in model.image_urls.Split('\n'))
+                        urls.Add(l);
                 var pro = new Products()
                 {
                     Active = true,
                     Code = model.code,
                     Description = model.description,
                     Id = id,
-                    ImageUrls = imageUrls != null ?
-                        JsonConvert.SerializeObject(imageUrls) : null,
+                    ImageUrls = JsonConvert.SerializeObject(urls),
                     InStockAmount = model.in_stock_amount,
                     IsInStockAmountVisible = model.is_in_stock_amount_visible == true ? true : false,
                     IsVisible = model.is_visible == true ? true : false,
@@ -88,21 +73,11 @@ namespace CSK.Admin.Controllers
             }
             catch (Exception e)
             {
-                var extraMess = "";
-                try
-                {
-                    if (imageUrls != null)
-                        System.IO.Directory.Delete(localFolder, true);
-                }
-                catch (Exception)
-                {
-                    extraMess = "Folder deleted fail";
-                }
+
                 return Error(new
                 {
                     message = "Có lỗi xảy ra. Vui lòng thử lại.",
-                    data = e,
-                    extraMess
+                    data = e
                 });
             }
         }
@@ -112,10 +87,6 @@ namespace CSK.Admin.Controllers
         public IActionResult Edit(string id,
             [FromForm]EditProductViewModel model)
         {
-            var wwwRoot = App.Instance.DataPath;
-            var relativePath = $"/uploads/product/{id}/";
-            var localFolder = wwwRoot + relativePath;
-            List<string> imageUrls = null;
             try
             {
                 var entity = _context.Products.FirstOrDefault(p => p.Id == id && p.Active == true);
@@ -124,20 +95,6 @@ namespace CSK.Admin.Controllers
                     {
                         message = "Không tìm thấy"
                     });
-
-                if (model.images != null)
-                {
-                    imageUrls = new List<string>();
-                    var count = 1;
-                    if (System.IO.Directory.Exists(localFolder))
-                        System.IO.Directory.Delete(localFolder, true);
-                    foreach (var file in model.images)
-                    {
-                        var fileName = file.FileName;
-                        var fileUploadResult = FileUploadHelper.Save(file, wwwRoot, relativePath, $"image{count++}.jpg").Result;
-                        imageUrls.Add($"/api/files?path={HttpUtility.UrlEncode(fileUploadResult.RelativePath)}");
-                    }
-                }
 
                 var categories = new List<CategoriesOfProducts>();
                 if (model.categories_id != null)
@@ -148,10 +105,14 @@ namespace CSK.Admin.Controllers
                             ProductId = id
                         });
 
+                var urls = new List<string>();
+                if (model.image_urls != null)
+                    foreach (var l in model.image_urls.Split('\n'))
+                        urls.Add(l);
+
                 entity.Code = model.code;
                 entity.Description = model.description;
-                if (imageUrls != null)
-                    entity.ImageUrls = JsonConvert.SerializeObject(imageUrls);
+                entity.ImageUrls = JsonConvert.SerializeObject(urls);
                 entity.InStockAmount = model.in_stock_amount;
                 entity.IsInStockAmountVisible = model.is_in_stock_amount_visible == true ? true : false;
                 entity.IsVisible = model.is_visible == true ? true : false;
@@ -169,21 +130,11 @@ namespace CSK.Admin.Controllers
             }
             catch (Exception e)
             {
-                var extraMess = "";
-                try
-                {
-                    if (imageUrls != null)
-                        System.IO.Directory.Delete(localFolder, true);
-                }
-                catch (Exception)
-                {
-                    extraMess = "Folder deleted fail";
-                }
+
                 return Error(new
                 {
                     message = "Có lỗi xảy ra. Vui lòng thử lại.",
                     data = e,
-                    extraMess
                 });
             }
         }
@@ -340,7 +291,7 @@ namespace CSK.Admin.Controllers
         public double? unit_price { get; set; }
         public double? discount_amount { get; set; }
         public double? discount_percent { get; set; }
-        public IFormFile[] images { get; set; }
+        public string image_urls { get; set; }
         public bool? is_visible { get; set; }
         public IEnumerable<string> categories_id { get; set; }
 
@@ -358,7 +309,7 @@ namespace CSK.Admin.Controllers
         public double? unit_price { get; set; }
         public double? discount_amount { get; set; }
         public double? discount_percent { get; set; }
-        public IFormFile[] images { get; set; }
+        public string image_urls { get; set; }
         public bool? is_visible { get; set; }
         public IEnumerable<string> categories_id { get; set; }
     }

@@ -98,9 +98,8 @@
                             </label>
                         </div>
                         <div class="form-group">
-                            <label>Chọn hình ảnh</label>
-                            <input type="file" multiple
-                                   accept="image/*" name="images">
+                            <label>Links hình ảnh</label>
+                            <textarea name="image_urls" class="form-control"></textarea>
                         </div>
                         <div id="product-images">
                             <!-- dynamic data -->
@@ -224,10 +223,14 @@
                     addCate(cate.id, cate.name);
                 }
 
-                if (data.image_urls)
-                    for (var i = 0; i < data.image_urls.length; i++)
+                if (data.image_urls) {
+                    var text = '';
+                    for (var i = 0; i < data.image_urls.length; i++) {
+                        text += data.image_urls[i] + '\n';
                         addImage(data.image_urls[i]);
-
+                    }
+                    $('[name=image_urls]').text(text);
+                }
             },
             error: (data) => {
                 console.log(data);

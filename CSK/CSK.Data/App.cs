@@ -15,12 +15,6 @@ namespace CSK.Data
         public const string SECRET_KEY = "consaukho123456789@987654321";
     }
 
-    public class FileUploadResult
-    {
-        public string LocalPath { get; set; }
-        public string RelativePath { get; set; }
-    }
-
     public static class Helper
     {
         public static string ToVNStyleDateString(DateTime? rawTime)
@@ -45,35 +39,6 @@ namespace CSK.Data
                     instance = new App();
                 return instance;
             }
-        }
-    }
-
-    public static class FileUploadHelper
-    {
-        public static async Task<FileUploadResult> Save(IFormFile file,
-            string webRootFolder, string relativeFolder, string fileName)
-        {
-
-            var localFolder = webRootFolder + "/" + relativeFolder + "/";
-            if (!Directory.Exists(localFolder))
-                Directory.CreateDirectory(localFolder);
-            var filePath = localFolder + fileName;
-
-            var relativePath = "/" + relativeFolder + "/" + fileName;
-
-            if (file.Length > 0)
-            {
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-            }
-
-            return new FileUploadResult
-            {
-                LocalPath = filePath,
-                RelativePath = relativePath
-            };
         }
     }
 

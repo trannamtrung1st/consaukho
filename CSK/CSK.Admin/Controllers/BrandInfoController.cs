@@ -45,7 +45,25 @@ namespace CSK.Admin.Controllers
                     {
                         case "layout":
                             if (brand.HomePageLayout != null)
-                                obj["layout"] = JsonConvert.DeserializeObject(brand.HomePageLayout);
+                            {
+                                try
+                                {
+                                    obj["layout"] = JsonConvert.DeserializeObject(brand.HomePageLayout);
+                                }
+                                catch (Exception e)
+                                {
+                                }
+                            }
+                            if (brand.HomePageLayoutBackup!= null)
+                            {
+                                try
+                                {
+                                    obj["layout_backup"] = JsonConvert.DeserializeObject(brand.HomePageLayoutBackup);
+                                }
+                                catch (Exception e)
+                                {
+                                }
+                            }
                             break;
                     }
                 }
@@ -63,10 +81,14 @@ namespace CSK.Admin.Controllers
 
         [Authorize]
         [HttpPut("layout")]
-        public IActionResult Update(IDictionary<string, object> layout)
+        public IActionResult Update(IDictionary<string, string> data)
         {
             try
             {
+                var brand = _context.BrandInfo.FirstOrDefault();
+                brand.HomePageLayoutBackup = brand.HomePageLayout;
+                brand.HomePageLayout = data["layout"];
+                _context.SaveChanges();
                 return Ok();
             }
             catch (Exception e)

@@ -18,21 +18,24 @@
         width: 200px;
     }
 
-    .discount{
+    .discount {
         background-color: orange;
-        border-radius:20px;
+        border-radius: 20px;
         padding: 0 10px;
     }
 
-    .popular-product{
-        bottom:0;
-        transition: bottom 0.25s;
-    }
-    .popular-product:hover{
-        bottom:20px;
+    .custom-product {
+        bottom: 0;
+        padding-top: 15px;
+        transition: 0.25s;
     }
 
-    #popular-products img{
+        .custom-product:hover {
+            box-shadow: 0px 0px 5px grey;
+            bottom: 20px;
+        }
+
+    #popular-products img {
         margin-bottom: 10px;
     }
 </style>
@@ -82,11 +85,11 @@
     </div>
 </div>
 
-<div class="site-section">
+<div id="lo-products" class="site-section">
     <div class="container">
         <div class="row">
             <div class="title-section mb-5 col-12">
-                <h2 class="text-uppercase">Sản phẩm phổ biến</h2>
+                <h2 class="text-uppercase" id="lo-products-title">Sản phẩm phổ biến</h2>
             </div>
         </div>
         <div class="row" id="popular-products">
@@ -94,6 +97,25 @@
         </div>
     </div>
 </div>
+
+
+<div id="lo-most-rated" class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="title-section text-center mb-5 col-12">
+                <h2 id="lo-most-rated-title" class="text-uppercase">Most Rated</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 block-3">
+                <div class="nonloop-block-3 owl-carousel" id="most-rated-products">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div id="lo-banner-bottom" class="site-blocks-cover inner-page py-5" data-aos="fade">
     <div class="container">
@@ -116,7 +138,6 @@
 <script>
     pageInit();
     function pageInit() {
-        loadPopularProducts();
     }
 
     function setLayout() {
@@ -148,6 +169,7 @@
                 }
                 if (banner.img)
                     $("#lo-banner-img").attr('src', banner.img);
+
             }
         } catch (e) { }
 
@@ -209,44 +231,77 @@
             }
         } catch (e) { }
 
+        try {
+            var products = cacheLayout.products;
+            if (!products.visible) {
+                $('#lo-products').remove();
+            } else {
+                $('#lo-products-title').text(products.title);
+                if (products.auto)
+                    loadPopularProducts(products.auto);
+                else {
+                    loadProductsToView(products.manual, 'popular-products');
+                }
+            }
+        } catch (e) { }
+
+        try {
+            var mostRateds = cacheLayout.most_rated;
+            if (!mostRateds.visible) {
+                $('#lo-most-rated').remove();
+            } else {
+                $('#lo-most-rated-title').text(mostRateds.title);
+                loadProductsToView(mostRateds.manual, 'most-rated-products');
+            }
+        } catch (e) { }
+
         return true;
     }
 
-    function loadPopularProducts() {
-        $.ajax({
-            url: '/api/products?fields=info&popular=true&take=6&visible=true',
-            type: 'get',
-            success: (data) => {
-                console.log(data);
-                for (var i = 0; i < data.length; i++) {
-                    var price = $('<strong class="item-price">');
-                    if (data[i].discount_amount) {
-                        var unit = data[i].unit_price.toString();
-                        var discount = data[i].discount_amount.toString();
-                        var final = (data[i].unit_price - data[i].discount_amount).toString();
-                        price.append(
-                            $('<del>' + toMoneyFormat(unit) + '</del>')
-                        ).append(' ' + toMoneyFormat(final)).append('&nbsp;&nbsp;&nbsp;').append(
-                            $('<span class="discount">-' + toMoneyFormat(discount) + '</span>')
-                        );
-                    } else if (data[i].discount_percent) {
-                        var unit = data[i].unit_price.toString();
-                        var discount = data[i].discount_percent.toString();
-                        var final = (data[i].unit_price - data[i].discount_percent * data[i].unit_price / 100).toString();
-                        price.append(
-                            $('<del>' + toMoneyFormat(unit) + '</del> ')
-                        ).append(' '+ toMoneyFormat(final)).append('&nbsp;&nbsp;&nbsp;').append(
-                            $('<span class="discount">-' + discount + '%</span>')
-                        );
-                    } else {
-                        var unit = data[i].unit_price.toString();
-                        price.append(toMoneyFormat(unit));
-                    }
+    function loadProductsToView(data, section) {
+        for (var i = 0; i < data.length; i++) {
+            var price = $('<strong class="item-price">');
+            if (data[i].discount_amount) {
+                var unit = data[i].unit_price.toString();
+                var discount = data[i].discount_amount.toString();
+                var final = (data[i].unit_price - data[i].discount_amount).toString();
+                price.append(
+                    $('<del>' + toMoneyFormat(unit) + '</del>')
+                ).append(' ' + toMoneyFormat(final)).append('&nbsp;&nbsp;&nbsp;').append(
+                    $('<span class="discount">-' + toMoneyFormat(discount) + '</span>')
+                );
+            } else if (data[i].discount_percent) {
+                var unit = data[i].unit_price.toString();
+                var discount = data[i].discount_percent.toString();
+                var final = (data[i].unit_price - data[i].discount_percent * data[i].unit_price / 100).toString();
+                price.append(
+                    $('<del>' + toMoneyFormat(unit) + '</del> ')
+                ).append(' ' + toMoneyFormat(final)).append('&nbsp;&nbsp;&nbsp;').append(
+                    $('<span class="discount">-' + discount + '%</span>')
+                );
+            } else {
+                var unit = data[i].unit_price.toString();
+                price.append(toMoneyFormat(unit));
+            }
 
-                    $('#popular-products').append(
-                        $('<div class="popular-product col-lg-4 col-md-6 item-entry mb-4">').append(
+            if (section.indexOf('popular') > -1) {
+                $('#'+section).append(
+                    $('<div class="custom-product col-lg-4 col-md-6 item-entry mb-4">').append(
+                        $('<a href="#" class="d-block">').append(
+                            $('<img src="' + (data[i].image_urls ? data[i].image_urls[0] : '') + '" alt="Image" class="img-fluid">')
+                        )
+                    ).append(
+                        $('<h2 class="item-title"><a href="#">' + data[i].name + '</a></h2>')
+                    ).append(
+                        price
+                    )
+                )
+            } else {
+                $('#'+section).append(
+                    $('<div class="item">').append(
+                        $('<div class="custom-product col-md-12 item-entry mb-4">').append(
                             $('<a href="#" class="d-block">').append(
-                                $('<img src="' + (data[i].image_urls? data[i].image_urls[0] : '') + '" alt="Image" class="img-fluid">')
+                                $('<img src="' + (data[i].image_urls ? data[i].image_urls[0] : '') + '" alt="Image" class="img-fluid">')
                             )
                         ).append(
                             $('<h2 class="item-title"><a href="#">' + data[i].name + '</a></h2>')
@@ -254,7 +309,19 @@
                             price
                         )
                     )
-                }
+                )
+            }
+
+        }
+    }
+
+    function loadPopularProducts(amount) {
+        $.ajax({
+            url: '/api/products?fields=info&popular=true&take=' + amount + '&visible=true',
+            type: 'get',
+            success: (data) => {
+                console.log(data);
+                loadProductsToView(data,'popular-products');
             },
             error: (data) => {
                 console.log(data);

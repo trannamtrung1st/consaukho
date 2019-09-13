@@ -33,26 +33,16 @@ namespace CSK.Admin.Controllers
         [HttpPost("")]
         public IActionResult Create([FromForm]CreateCategoryViewModel model)
         {
-            string id = Guid.NewGuid().ToString();
-            FileUploadResult fileUploadResult = null;
             try
             {
-                if (model.file != null)
-                {
-                    var file = model.file;
-                    var fileName = file.FileName;
-                    fileUploadResult = FileUploadHelper.Save(file, App.Instance.DataPath,
-                        $"/uploads/category/{id}/", "image.jpg").Result;
-                }
-
+                
                 var cate = new ProductCategories()
                 {
                     Active = true,
                     Description = model.description,
-                    Id = id,
+                    Id = Guid.NewGuid().ToString(),
                     Name = model.name,
-                    ImageUrl = fileUploadResult != null ?
-                        $"/api/files?path={HttpUtility.UrlEncode(fileUploadResult.RelativePath)}" : null,
+                    ImageUrl = model.image_url,
                     CategoriesOfProducts = null
                 };
                 _context.ProductCategories.Add(cate);
@@ -61,21 +51,10 @@ namespace CSK.Admin.Controllers
             }
             catch (Exception e)
             {
-                var extraMess = "";
-                try
-                {
-                    if (fileUploadResult != null)
-                        System.IO.File.Delete(fileUploadResult.LocalPath);
-                }
-                catch (Exception)
-                {
-                    extraMess = "File deleted fail";
-                }
                 return Error(new
                 {
                     message = "Có lỗi xảy ra. Vui lòng thử lại.",
                     data = e,
-                    extraMess
                 });
             }
         }
@@ -85,7 +64,6 @@ namespace CSK.Admin.Controllers
         public IActionResult Edit(string id,
             [FromForm]EditCategoryViewModel model)
         {
-            FileUploadResult fileUploadResult = null;
             try
             {
                 var entity = _context.ProductCategories.FirstOrDefault(c => c.Id == id);
@@ -95,40 +73,19 @@ namespace CSK.Admin.Controllers
                         message = "Không tìm thấy"
                     });
 
-                if (model.file != null)
-                {
-                    var file = model.file;
-                    var fileName = file.FileName;
-                    fileUploadResult = FileUploadHelper.Save(file, App.Instance.DataPath,
-                        $"/uploads/category/{id}/", "image.jpg").Result;
-                }
-
-                if (fileUploadResult != null)
-                    entity.ImageUrl = fileUploadResult != null ?
-                        $"/api/files?path={HttpUtility.UrlEncode(fileUploadResult.RelativePath)}" : null;
                 entity.Name = model.name;
                 entity.Description = model.description;
+                entity.ImageUrl = model.image_url;
 
                 _context.SaveChanges();
                 return NoContent();
             }
             catch (Exception e)
             {
-                var extraMess = "";
-                try
-                {
-                    if (fileUploadResult != null)
-                        System.IO.File.Delete(fileUploadResult.LocalPath);
-                }
-                catch (Exception)
-                {
-                    extraMess = "File deleted fail";
-                }
                 return Error(new
                 {
                     message = "Có lỗi xảy ra. Vui lòng thử lại.",
                     data = e,
-                    extraMess
                 });
             }
         }
@@ -244,7 +201,7 @@ namespace CSK.Admin.Controllers
     {
         public string name { get; set; }
         public string description { get; set; }
-        public IFormFile file { get; set; }
+        public string image_url { get; set; }
     }
 
 
@@ -252,7 +209,7 @@ namespace CSK.Admin.Controllers
     {
         public string name { get; set; }
         public string description { get; set; }
-        public IFormFile file { get; set; }
+        public string image_url { get; set; }
     }
 
 }

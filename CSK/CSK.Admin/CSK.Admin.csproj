@@ -1900,6 +1900,7 @@
 
   <ItemGroup>
     <Folder Include="Pages\Admin\Customers\" />
+    <Folder Include="wwwroot\images\layout\" />
   </ItemGroup>
 
   <ItemGroup>
