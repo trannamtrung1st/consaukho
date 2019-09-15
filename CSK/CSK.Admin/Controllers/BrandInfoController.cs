@@ -37,6 +37,14 @@ namespace CSK.Admin.Controllers
             try
             {
                 var brand = _context.BrandInfo.FirstOrDefault();
+                if (brand == null)
+                {
+                    brand = _context.BrandInfo.Add(new BrandInfo
+                    {
+                        Id = Guid.NewGuid().ToString()
+                    }).Entity;
+                    _context.SaveChanges();
+                }
                 var obj = new Dictionary<string, object>();
 
                 foreach (var f in fields)
@@ -54,7 +62,7 @@ namespace CSK.Admin.Controllers
                                 {
                                 }
                             }
-                            if (brand.HomePageLayoutBackup!= null)
+                            if (brand.HomePageLayoutBackup != null)
                             {
                                 try
                                 {

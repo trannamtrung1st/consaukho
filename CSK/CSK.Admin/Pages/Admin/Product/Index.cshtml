@@ -44,7 +44,7 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    <table id="tbl-products" class="table table-bordered table-striped table-hover">
+                    <table id="tbl-products" style="width:100%" class="table table-bordered table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>STT</th>
@@ -120,7 +120,10 @@
             );
         }
 
-        table.DataTable();
+        table.DataTable({
+            "scrollX": true,
+            "bAutoWidth": true
+        });
     }
 
     function getProducts() {

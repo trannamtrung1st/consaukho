@@ -37,7 +37,7 @@ namespace CSK.Admin.Controllers
 
         [Authorize]
         [HttpPost("")]
-        public IActionResult Create(string path, IFormFile[] files)
+        public IActionResult Create([FromForm]string path, IFormFile[] files)
         {
             path = App.Instance.DataPath + path;
             foreach (var f in files)

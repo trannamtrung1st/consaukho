@@ -1,0 +1,175 @@
+﻿@page
+@model CSK.Admin.Pages.CheckoutModel
+@{
+}
+
+
+<div class="bg-light py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0">
+                <a href="/">Trang chủ</a>
+                <span class="mx-2 mb-0">/</span>
+                <a href="/cart">Giỏ hàng</a>
+                <span class="mx-2 mb-0">/</span>
+                <strong class="text-black">Thanh toán</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="site-section">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-6 mb-5 mb-md-0">
+                <h2 class="h3 mb-3 text-black">Chi tiết đơn hàng</h2>
+                <div class="p-3 p-lg-5 border">
+
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <label class="text-black">Họ tên <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="customer.name">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <label class="text-black">Địa chỉ <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="customer.address" placeholder="Nhập địa chỉ nhận đơn hàng">
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-5">
+                        <div class="col-md-6">
+                            <label class="text-black">Số điện thoại <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="customer.phone" placeholder="092xxxxxxxx">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="c_order_notes" class="text-black">Ghi chú</label>
+                        <textarea name="note" cols="30" rows="5" class="form-control" placeholder="Ghi chú cần thiết"></textarea>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+
+                <div class="row mb-5">
+                    <div class="col-md-12">
+                        <h2 class="h3 mb-3 text-black">Đơn hàng của bạn</h2>
+                        <div class="p-3 p-lg-5 border">
+                            <table class="table site-block-order-table mb-5" id="tbl-order-detail">
+                                <thead>
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Tổng cộng (VND)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!--dynamic-->
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="text-black font-weight-bold"><strong>Thành tiền</strong></td>
+                                        <td class="text-black" id="order-total-amount"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-black font-weight-bold"><strong>Tổng cộng</strong></td>
+                                        <td class="text-black font-weight-bold">
+                                            <strong id="order-final-amount"></strong>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                            <div class="form-group">
+                                <h5 class="text-black">Chọn phương thức thanh toán</h5>
+                                <input type="radio" id="pm-cod" name="payment_type" value="cod" checked />
+                                <label for="pm-cod" class="text-black">Ship COD</label><br />
+                                <input type="radio" id="pm-transfer" name="payment_type" value="transfer" />
+                                <label for="pm-transfer" class="text-black">Chuyển khoản</label>
+                            </div>
+
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-lg btn-block" onclick="createOrder()">Đặt hàng</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- </form> -->
+    </div>
+</div>
+
+@section script{
+
+<script>
+    var productDetails = {};
+    pageInit();
+
+    function pageInit() {
+        loadCartDetail();
+    }
+
+    function loadCartDetail() {
+
+        function addProductRow(p, quantity) {
+            productDetails[p.id] = p;
+
+            var finalUnit = p.unit_price;
+            if (p.discount_amount) {
+                finalUnit = p.unit_price - p.discount_amount;
+            } else if (p.discount_percent) {
+                finalUnit = p.unit_price - (p.discount_percent * p.unit_price / 100);
+            } 
+
+            var finalAmount = finalUnit * quantity;
+            p.final_unit = finalUnit;
+            var finalAmountStr = toMoneyFormat(finalAmount.toString());
+
+            $('#tbl-order-detail tbody').append(
+                $('<tr>').append(
+                    $('<td>' + p.name + ' <strong class="mx-2">x</strong> ' + quantity + '</td>')
+                ).append(
+                    $('<td>' + finalAmountStr + '</td>')
+                )
+            );
+
+            return finalAmount;
+        }
+
+        cart = getCart();
+
+        var details = cart.details;
+        var idsStr = '';
+        for (var k in details) {
+            idsStr += '&ids=' + details[k].product_id;
+        }
+
+        $.ajax({
+            url: '/api/products?fields=info' + idsStr,
+            type: 'get',
+            success: (data) => {
+                console.log(data);
+                var finalAmount = 0;
+                for (var i = 0; i < data.length; i++) {
+                    finalAmount += addProductRow(data[i], details[data[i].id].quantity);
+                }
+                var finalAmountStr = toMoneyFormat(finalAmount.toString());
+                $('#order-total-amount').text(finalAmountStr);
+                $('#order-final-amount').text(finalAmountStr);
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+            }
+        });
+    }
+</script>
+
+}

@@ -91,11 +91,15 @@ namespace CSK.Admin.Controllers
         }
 
         [HttpGet("")]
-        public IActionResult Get([FromQuery]string[] fields)
+        public IActionResult Get([FromQuery]string[] fields,
+            [FromQuery]string[] ids)
         {
             try
             {
-                var cates = _context.ProductCategories.Where(p => p.Active == true).ToList();
+                var query = _context.ProductCategories.Where(p => p.Active == true);
+                if (ids != null && ids.Length > 0)
+                    query = query.Where(c => ids.Contains(c.Id));
+                var cates = query.ToList();
                 if (fields == null || fields.Length == 0)
                     fields = new string[] { "info" };
                 var list = new List<IDictionary<string, object>>();
@@ -116,7 +120,7 @@ namespace CSK.Admin.Controllers
                                 obj["name"] = c.Name;
                                 break;
                             case "pcount":
-                                obj["pcount"] = c.CategoriesOfProducts.Count;
+                                obj["pcount"] = c.CategoriesOfProducts.Where(p => p.Product.Active == true).Count();
                                 break;
                         }
                     }

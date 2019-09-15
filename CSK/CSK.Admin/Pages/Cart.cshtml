@@ -1,0 +1,248 @@
+﻿@page
+@model CSK.Admin.Pages.CartModel
+@{
+}
+
+@section style{
+<style>
+</style>
+}
+
+<div class="bg-light py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0">
+                <a href="/">Trang chủ</a> <span class="mx-2 mb-0">/</span>
+                <strong class="text-black">Giỏ hàng</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="site-section">
+    <div class="container">
+        <div class="row mb-5">
+            <form class="col-md-12" method="post">
+                <div class="site-blocks-table">
+                    <table class="table table-bordered" id="cart-table">
+                        <thead>
+                            <tr>
+                                <th class="product-thumbnail">Hình ảnh</th>
+                                <th class="product-name">Tên sản phẩm</th>
+                                <th class="product-price">Giá (VND)</th>
+                                <th class="product-quantity">Số lượng</th>
+                                <th class="product-total">Tổng cộng</th>
+                                <th class="product-remove">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row mb-5">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <button class="btn btn-primary btn-sm btn-block" onclick="saveCart()">Cập nhật giỏ hàng</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button onclick="location.href='/'" class="btn btn-outline-primary btn-sm btn-block">Hủy và về trang chủ</button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-6 pl-5">
+                <div class="row justify-content-end">
+                    <div class="col-md-7">
+                        <div class="row">
+                            <div class="col-md-12 text-right border-bottom mb-5">
+                                <h3 class="text-black h4 text-uppercase">TỔNG GIỎ HÀNG</h3>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <span class="text-black">Thành tiền</span>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <strong class="text-black" id="cart-total-amount"></strong>
+                            </div>
+                        </div>
+
+                        <div class="row mb-5">
+                            <div class="col-md-6">
+                                <span class="text-black">Tổng cộng</span>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <strong class="text-black" id="cart-final-amount"></strong>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary btn-lg btn-block" onclick="location.href = '/checkout'">Thanh toán</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section script{
+<script>
+    var cart;
+    var productDetails = {};
+    pageInit();
+
+    function pageInit() {
+        loadCartDetail();
+    }
+
+    function changeQuantity(inp, pId) {
+        inp = $(inp);
+        var val = parseInt(inp.val());
+        if (!val) {
+            inp.val(cart.details[pId].quantity);
+            return;
+        }
+        cart.details[pId].quantity = val;
+        var finalUnit = productDetails[pId].final_unit;
+        var finalAmount = finalUnit * val;
+        $('#' + pId + ' .product-total').text(toMoneyFormat(finalAmount.toString()));
+        updateCartTotal();
+    }
+
+    function loadCartDetail() {
+
+        function addProductRow(p, quantity) {
+            productDetails[p.id] = p;
+
+            var unit = p.unit_price.toString();
+            var finalUnit = p.unit_price;
+            var price;
+            if (p.discount_amount) {
+                finalUnit = p.unit_price - p.discount_amount;
+                var discStr = finalUnit.toString();
+                price = $('<td>').append(
+                    $('<del>' + toMoneyFormat(unit) + '</del>')
+                ).append(
+                    '&nbsp;&nbsp;&nbsp;'
+                ).append(toMoneyFormat(discStr))
+            } else if (p.discount_percent) {
+                finalUnit = p.unit_price - (p.discount_percent * p.unit_price / 100);
+                var discStr = finalUnit.toString();
+                price = $('<td>').append(
+                    $('<del>' + toMoneyFormat(unit) + '</del>')
+                ).append(
+                    '&nbsp;&nbsp;&nbsp;'
+                ).append(toMoneyFormat(discStr))
+            } else {
+                price = $('<td>' + toMoneyFormat(unit) + '</td>');
+            }
+
+            var finalAmount = finalUnit * quantity;
+            p.final_unit = finalUnit;
+
+            $('#cart-table tbody').append(
+                $('<tr id="' + p.id + '">').append(
+                    $('<td class="product-thumbnail">').append(
+                        $('<img src="' + p.image_urls[0] + '" alt="Image" class="img-fluid">')
+                    )
+                ).append(
+                    $('<td class="product-name">').append(
+                        $('<h2 class="h5 text-black">' + p.name + '</h2>')
+                    )
+                ).append(
+                    price
+                ).append(
+                    $('<td>').append(
+                        $('<div class="input-group mb-3" style="max-width: 120px;">').append(
+                            $('<input type="number" min="1" step="1" class="form-control text-center" onchange="changeQuantity(this, \'' + p.id + '\')"' +
+                                ' value="' + quantity + '" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">')
+                        )
+                    )
+                ).append(
+                    $('<td class="product-total">' + toMoneyFormat(finalAmount.toString()) + '</td>')
+                ).append(
+                    $('<td><a href="#" class="btn btn-primary height-auto btn-sm" ' +
+                        'onclick="removeProduct(\'' + p.id + '\');return false;">X</a></td>')
+                )
+            );
+        }
+
+        cart = getCart();
+
+        var details = cart.details;
+        var idsStr = '';
+        for (var k in details) {
+            idsStr += '&ids=' + details[k].product_id;
+        }
+
+        $.ajax({
+            url: '/api/products?fields=info' + idsStr,
+            type: 'get',
+            success: (data) => {
+                console.log(data);
+                for (var i = 0; i < data.length; i++) {
+                    addProductRow(data[i], details[data[i].id].quantity);
+                }
+                updateCartTotal();
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+            }
+        });
+    }
+
+    function removeProduct(proId) {
+        Swal.fire({
+            title: 'Bạn chắc chắn muốn xóa?',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Chắc chắn',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.value) {
+                var details = cart.details;
+                delete details[proId];
+                $('#' + proId).remove();
+                updateCartTotal();
+            }
+        });
+        
+    }
+
+    function saveCart() {
+        sessionStorage["cart"] = JSON.stringify(cart);
+        reloadCartProductsCount();
+        Swal.fire({
+            title: 'Thành công',
+            text: "Đã cập nhật giỏ",
+            type: 'success'
+        });
+    }
+
+    function updateCartTotal() {
+        var amount = 0;
+        var details = cart.details;
+        for (var k in details) {
+            var d = details[k];
+            var p = productDetails[d.product_id];
+            var final = p.final_unit * d.quantity;
+            amount += final;
+        }
+        var amountStr = toMoneyFormat(amount.toString());
+        $('#cart-total-amount').text(amountStr + ' (VND)');
+        $('#cart-final-amount').text(amountStr + ' (VND)');
+    }
+
+</script>
+}

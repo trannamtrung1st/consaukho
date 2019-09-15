@@ -24,6 +24,7 @@ namespace CSK.Data.Models
         public double? DiscountAmount { get; set; }
         public double? DiscountPercent { get; set; }
         public bool? Active { get; set; }
+        public DateTime? CreatedDate { get; set; }
 
         public virtual ICollection<CategoriesOfProducts> CategoriesOfProducts { get; set; }
         public virtual ICollection<SaleOrderDetails> SaleOrderDetails { get; set; }

@@ -1,6 +1,6 @@
 var currentPath = '';
 
-$(function () {
+function list() {
 
     var filemanager = $('.filemanager'),
         breadcrumbs = $('.breadcrumbs'),
@@ -46,7 +46,7 @@ $(function () {
         // in addition to keyboard input.
 
         filemanager.find('input[type=search]').on('input', function (e) {
-            
+
             folders = [];
             files = [];
 
@@ -254,7 +254,7 @@ $(function () {
 
 
         // Render the HTML for the file manager
-        
+
         function render(data) {
 
             var scannedFolders = [],
@@ -409,4 +409,4 @@ $(function () {
         }
 
     });
-});
+}

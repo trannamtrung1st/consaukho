@@ -90,6 +90,7 @@
     <!-- Include our script files -->
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+    <script src="assets/js/script.js"></script>
 
     <script>
         var dataPath;
@@ -123,15 +124,18 @@
             });
             dataPath = '/api/files/list';
 
+            list();
+
             //Trigger now when you have selected any file
-            $('#inp-file').unbind('change');
             $("#inp-file").change(function (e) {
                 var form = $('#upload-form');
                 var path = currentPath;
                 if (path.indexOf('/') < 0)
                     path += '/';
-                form.append('<input type="hidden" name="path" value="' + path.substring(path.indexOf('/')) + '"');
-                var formData = new FormData($('#upload-form')[0]);
+                form.append($('<input type="hidden" name="path" value="' + path.substring(path.indexOf('/')) + '">'));
+                var formData = new FormData(form[0]);
+                $('input[type=hidden]').remove();
+
                 $.ajax({
                     url: '/api/files/',
                     type: 'post',
@@ -140,7 +144,7 @@
                     cache: false,
                     data: formData,
                     success: (data) => {
-                        location.reload();
+                        list();
                     },
                     error: (data) => {
                         console.log(data);
@@ -173,7 +177,7 @@
                         url: '/api/files/folder?path=' + href.substring(href.indexOf('/')),
                         type: 'delete',
                         success: (data) => {
-                            $(btn).parent().remove();
+                            list();
                         },
                         error: (data) => {
                             console.log(data);
@@ -207,7 +211,7 @@
                         url: '/api/files?path=' + href.substring(href.indexOf('=') + 1),
                         type: 'delete',
                         success: (data) => {
-                            $(btn).parent().remove();
+                            list();
                         },
                         error: (data) => {
                             console.log(data);
@@ -234,7 +238,7 @@
                 url: '/api/files/name?old_path=' + href.substring(href.indexOf('=') + 1) + '&new_name=' + newName,
                 type: 'patch',
                 success: (data) => {
-                    location.reload();
+                    list();
                 },
                 error: (data) => {
                     console.log(data);
@@ -259,7 +263,7 @@
                 url: '/api/files/folder/name?old_path=' + href.substring(href.indexOf('/')) + '&new_name=' + newName,
                 type: 'patch',
                 success: (data) => {
-                    location.reload();
+                    list();
                 },
                 error: (data) => {
                     console.log(data);
@@ -293,7 +297,7 @@
                 url: '/api/files/folder?path=' + path.substring(path.indexOf('/')) + '/' + folder,
                 type: 'post',
                 success: (data) => {
-                    location.reload();
+                    list();
                 },
                 error: (data) => {
                     console.log(data);
@@ -308,8 +312,6 @@
 
         }
     </script>
-
-    <script src="assets/js/script.js"></script>
 
 </body>
 </html>

@@ -202,7 +202,7 @@
         }
 
         $.ajax({
-            url: '/api/sale-orders?fields=info&fields=cinfo&sorts=aorder_time&page=' + page,
+            url: '/api/sale-orders?fields=info&fields=cinfo&sorts=dorder_time&page=' + page,
             type: 'get',
             success: (data) => {
                 console.log(data);

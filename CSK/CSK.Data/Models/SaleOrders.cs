@@ -21,6 +21,7 @@ namespace CSK.Data.Models
         public DateTime? CancledTime { get; set; }
         public string PaymentType { get; set; }
         public string ShipAddress { get; set; }
+        public string Note { get; set; }
 
         public virtual Customers Customer { get; set; }
         public virtual ICollection<SaleOrderDetails> SaleOrderDetails { get; set; }

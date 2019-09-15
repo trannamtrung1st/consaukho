@@ -1,0 +1,399 @@
+﻿@page
+@model CSK.Admin.Pages.ProductsModel
+@{
+}
+
+@section style{
+<style>
+    .active-cate {
+        font-weight: bold;
+    }
+
+    .item-title a {
+        color: black !important;
+    }
+
+    .product-img-container {
+        position: relative;
+    }
+
+    .btn-detail {
+        opacity: 0;
+        background: rgba(255,255,255,0.7);
+        width: 101%;
+        height: 101%;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+        .btn-detail span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            display: inline-block;
+            transform: translate(-50%, -50%);
+            color: black;
+            font-size: 170%;
+        }
+
+    .custom-price {
+        color: #ee4266;
+    }
+
+        .custom-price del {
+            color: gray;
+        }
+
+    .discount {
+        background-color: orange;
+        border-radius: 20px;
+        padding: 2px 10px;
+        color: black;
+    }
+
+    .custom-product {
+        overflow: hidden;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        transition: 0.5s;
+        font-size: 130%;
+        font-weight: normal;
+    }
+
+        .custom-product img {
+            height: 320px;
+            width: 100%;
+        }
+
+        .custom-product a {
+            font-size: 130%;
+        }
+
+        .custom-product img {
+            margin-bottom: 10px;
+            transition: 0.5s;
+        }
+
+        /*.custom-product:hover .btn-detail {
+            opacity: 1;
+        }*/
+        .custom-product:hover {
+            box-shadow: 0 0 20px gray;
+        }
+</style>
+}
+
+<div class="custom-border-bottom py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0">
+                <a href="/">Trang chủ</a>
+                <span class="mx-2 mb-0">/</span>
+                <strong class="text-black">Sản phẩm</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="site-section">
+    <div class="container">
+
+        <div class="row mb-5">
+            <div class="col-md-9 order-1">
+
+                <div class="row align">
+                    <div class="col-md-12 mb-5">
+                        <div class="float-md-left"><h2 class="text-black h5">Sản phẩm</h2></div>
+                        <div class="d-flex">
+                            <div class="dropdown mr-1 ml-md-auto">
+                            </div>
+                            <div class="btn-group">
+                                <h5 style="color:black!important">Sắp xếp</h5>&nbsp;&nbsp;&nbsp;
+                                <select name="sorts" onchange="loadProducts()">
+                                    <option value="aprice">Giá từ thấp đến cao</option>
+                                    <option value="dprice">Giá từ cao đến thấp</option>
+                                    <option value="aname">Tên từ A đến Z</option>
+                                    <option value="dname">Tên từ Z đến A</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-5" id="products-container">
+                    <!--dynamic-->
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <div class="site-block-27">
+                            <ul id="page-container">
+                                <!--dynamic-->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 order-2 mb-5 mb-md-0">
+                <div class="border p-4 rounded mb-4">
+                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Danh mục</h3>
+                    <ul class="list-unstyled mb-0" id="categories">
+                        <li id="all-cates"><a href="#" onclick="selectCate(null, event); return false;">Tất cả</a></li>
+                    </ul>
+                </div>
+
+                <div class="border p-4 rounded mb-4">
+                    <div class="mb-4">
+                        <h3 class="mb-3 h6 text-uppercase text-black d-block">Giá cả</h3>
+                        <input type="number" step="1000" min="0" name="from_price" placeholder="Từ (VND)" />
+                        <input type="number" step="1000" min="0" name="to_price" placeholder="Đến (VND)" />
+                    </div>
+
+                </div>
+
+                <div class="border p-4 rounded mb-4">
+                    <button style="width:100%" class="btn btn-primary" onclick="loadProducts()">Lọc</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section script{
+<script>
+
+    var products;
+    var pCount = 1;
+    var pageLimit = 10;
+    var curCate = '@Model.CateId';
+    var search = '@Model.Search';
+    search = decode(search);
+
+    function decode(text){
+        const span = document.createElement('span');
+
+        return text
+            .replace(/&[#A-Za-z0-9]+;/gi, (entity, position, text) => {
+                span.innerHTML = entity;
+                return span.innerText;
+            });
+    }
+
+    pageInit();
+    function pageInit() {
+        $('#menu-products').addClass('active');
+
+        loadCategories();
+
+        $('#search-form').submit(() => {
+            search = $('[name=search]').val();
+            loadProducts();
+        });
+        $('.search-close').click(() => {
+            search = '';
+            loadProducts();
+            return false;
+        });
+    }
+
+    function addCate(cate) {
+        $('#categories').append(
+            $('<li class="mb-1">').append(
+                $('<a href="#" id="cate-' + cate.id + '" onclick="selectCate(\'' + cate.id + '\', event)";" class="d-flex">').append(
+                    $('<span>' + cate.name + '</span>')
+                ).append(
+                    $('<span class="text-black ml-auto">(' + cate.pcount + ')</span>')
+                )
+            )
+        )
+    }
+
+    function selectCate(id, e) {
+        e.preventDefault();
+        curCate = id;
+        $('.active-cate').removeClass('active-cate');
+        loadProducts();
+    }
+
+
+    function loadCategories() {
+        $.ajax({
+            url: '/api/product-categories?fields=info&fields=pcount',
+            type: 'get',
+            success: (data) => {
+                console.log(data);
+                for (var i = 0; i < data.length; i++) {
+                    addCate(data[i]);
+                }
+
+                loadProducts();
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+            }
+        });
+    }
+
+    function setPage(page) {
+
+        $('.custom-product').remove();
+
+        var pagesContainer = $('#page-container');
+        pagesContainer.find('li').remove();
+        pagesContainer.append(
+            $('<li><a href="#" onclick="setPage(1);return false;">&lt;</a></li>')
+        );
+
+        if (page < 3) {
+            var first = pCount > 3 ? 3 : pCount;
+            for (var i = 1; i <= first; i++) {
+                pagesContainer.append(
+                    $('<li id="page' + i + '"><a href="#" onclick="setPage(' + i + ');return false;">' + i + '</a></li>')
+                );
+            }
+            if (pCount > 3) {
+                pagesContainer.append(
+                    $('<li><span>...</span></li>')
+                );
+            }
+        }
+        else if (page <= pCount - 2) {
+            pagesContainer.append(
+                $('<li><span>...</span></li>')
+            );
+
+            var first = page - 1;
+            for (var i = first; i <= first + 2; i++) {
+                pagesContainer.append(
+                    $('<li id="page' + i + '"><a href="#" onclick="setPage(' + i + ');return false;">' + i + '</a></li>')
+                );
+            }
+            pagesContainer.append(
+                $('<li><span>...</span></li>')
+            );
+        } else {
+            pagesContainer.append(
+                $('<li><span>...</span></li>')
+            );
+
+            var first = pCount - 2;
+            for (var i = first; i <= first + 2; i++) {
+                pagesContainer.append(
+                    $('<li id="page' + i + '"><a href="#" onclick="setPage(' + i + ');return false;">' + i + '</a></li>')
+                );
+            }
+        }
+
+        pagesContainer.append(
+            $('<li><a href="#" onclick="setPage(' + pCount + ');return false;">&gt;</a></li>')
+        );
+        $('#page' + page).addClass('active');
+
+        function addProduct(p) {
+            var disc = $('<span>');
+            var price = $('<span class="custom-price">');
+            if (p.discount_amount) {
+                var unit = p.unit_price.toString();
+                var discount = p.discount_amount.toString();
+                var final = (p.unit_price - p.discount_amount).toString();
+                price.append(
+                    $('<del>' + toMoneyFormat(unit) + '</del>')
+                ).append('&nbsp;&nbsp;').append(' ' + toMoneyFormat(final));
+                disc.append('&nbsp;&nbsp;&nbsp;').append(
+                    $('<span class="discount">-' + toMoneyFormat(discount) + '</span>')
+                );
+            } else if (p.discount_percent) {
+                var unit = p.unit_price.toString();
+                var discount = p.discount_percent.toString();
+                var final = (p.unit_price - p.discount_percent * p.unit_price / 100).toString();
+                price.append(
+                    $('<del>' + toMoneyFormat(unit) + '</del> ')
+                ).append('&nbsp;&nbsp;').append(' ' + toMoneyFormat(final));
+                disc.append('&nbsp;&nbsp;&nbsp;').append(
+                    $('<span class="discount">-' + discount + '%</span>')
+                );
+            } else {
+                var unit = p.unit_price.toString();
+                price.append(toMoneyFormat(unit));
+            }
+
+            $('#products-container').append(
+                $('<div class="custom-product col-lg-6 col-md-6 item-entry mb-4">').append(
+                    $('<div class="product-img-container">').append(
+                        $('<a href="/detail/' + p.id + '" class="d-block">').append(
+                            $('<img src="' + (p.image_urls ? p.image_urls[0] : '') + '" alt="Image" class="img-fluid">')
+                        )
+                    ).append('<a href="/detail/' + p.id + '" class="btn-detail"><span>XEM</span></a>')
+                ).append(
+                    $('<h2 class="item-title">').append(
+                        $('<a href="/detail/' + p.id + '">').append(p.name)
+                    ).append(disc)
+                ).append(
+                    price
+                )
+            )
+        }
+
+        var pageIdx = page - 1;
+        var curPageProducts = products.slice(pageIdx * pageLimit, pageIdx * pageLimit + pageLimit);
+        for (var i = 0; i < curPageProducts.length; i++) {
+            addProduct(curPageProducts[i]);
+        }
+    }
+
+    function loadProducts() {
+
+        var sorts = $('select[name=sorts]');
+        var sortStr = '&sorts=' + sorts.val();
+
+        var priceStr = '';
+        var fromPrice = $('input[name=from_price]').val();
+        var toPrice = $('input[name=to_price]').val();
+        if (fromPrice)
+            priceStr += '&from_price=' + fromPrice;
+        if (toPrice)
+            priceStr += '&to_price=' + toPrice;
+
+        var nameStr = '';
+        if (search) {
+            var inp = $('[name=search]');
+            if (!inp.val()) {
+                inp.val(search);
+                $('.js-search-open').click();
+            }
+            nameStr += '&search=' + search;
+        }
+        var cateStr = '';
+        if (curCate) {
+            $('#cate-' + curCate).addClass('active-cate');
+            cateStr += '&cate_id=' + curCate;
+        } else 
+            $('#all-cates').addClass('active-cate');
+
+        $.ajax({
+            url: '/api/products?fields=info&visible=true' + sortStr + priceStr + nameStr + cateStr,
+            type: 'get',
+            success: (data) => {
+                console.log(data);
+                products = data;
+                pCount = Math.floor(data.length / pageLimit);
+                if (pCount == 0)
+                    pCount = 1;
+                setPage(1);
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+            }
+        });
+    }
+
+</script>
+}

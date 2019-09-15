@@ -49,7 +49,8 @@ namespace CSK.Admin.Controllers
                 var urls = new List<string>();
                 if (model.image_urls != null)
                     foreach (var l in model.image_urls.Split('\n'))
-                        urls.Add(l);
+                        if (!string.IsNullOrWhiteSpace(l))
+                            urls.Add(l);
                 var pro = new Products()
                 {
                     Active = true,
@@ -65,7 +66,8 @@ namespace CSK.Admin.Controllers
                     UnitPrice = model.unit_price,
                     DiscountAmount = model.discount_amount,
                     DiscountPercent = model.discount_percent,
-                    CategoriesOfProducts = categories
+                    CategoriesOfProducts = categories,
+                    CreatedDate = DateTime.Now
                 };
                 _context.Products.Add(pro);
                 _context.SaveChanges();
@@ -108,7 +110,8 @@ namespace CSK.Admin.Controllers
                 var urls = new List<string>();
                 if (model.image_urls != null)
                     foreach (var l in model.image_urls.Split('\n'))
-                        urls.Add(l);
+                        if (!string.IsNullOrWhiteSpace(l))
+                            urls.Add(l);
 
                 entity.Code = model.code;
                 entity.Description = model.description;
@@ -141,17 +144,59 @@ namespace CSK.Admin.Controllers
 
         [HttpGet("")]
         public IActionResult Get([FromQuery]string[] fields, bool? visible,
-            bool? popular, int page = 0, int limit = 0)
+            bool? popular,
+            [FromQuery]string[] ids,
+            [FromQuery]string[] sorts,
+            string cate_id,
+            double? from_price,
+            double? to_price,
+            string search,
+            int page = 0, int limit = 0)
         {
             try
             {
                 var query = _context.Products.Where(p => p.Active == true);
+                if (ids != null && ids.Length > 0)
+                    query = query.Where(p => ids.Contains(p.Id));
                 if (popular == true)
                     query = query.OrderByDescending(p => p.SaleOrderDetails.Count);
                 if (visible == true)
                     query = query.Where(p => p.IsVisible == true);
                 if (limit > 0)
                     query = query.Skip(page * limit).Take(limit);
+                if (sorts != null)
+                    foreach (var s in sorts)
+                    {
+                        var isAsc = s[0] == 'a';
+                        var field = s.Substring(1);
+                        switch (field)
+                        {
+                            case "name":
+                                if (isAsc)
+                                    query = query.OrderBy(p => p.Name);
+                                else
+                                    query = query.OrderByDescending(p => p.Name);
+                                break;
+                            case "price":
+                                if (isAsc)
+                                    query = query.OrderBy(p => p.UnitPrice);
+                                else
+                                    query = query.OrderByDescending(p => p.UnitPrice);
+                                break;
+                        }
+                    }
+                if (cate_id != null)
+                    query = query.Where(p => p.CategoriesOfProducts.Any(cp => cp.CategoryId == cate_id));
+                if (from_price != null)
+                    query = query.Where(p => p.UnitPrice >= from_price);
+                if (to_price != null)
+                    query = query.Where(p => p.UnitPrice <= to_price);
+                if (search != null)
+                {
+                    query = query.Where(p => p.Name.Contains(search) ||
+                        p.CategoriesOfProducts.Any(pC => pC.Category.Name.Contains(search)));
+                }
+                query = query.OrderByDescending(p => p.CreatedDate);
 
                 var pros = query.ToList();
                 if (fields == null || fields.Length == 0)
@@ -175,12 +220,14 @@ namespace CSK.Admin.Controllers
                                     JsonConvert.DeserializeObject<List<string>>(p.ImageUrls) : null;
                                 obj["in_stock_amount"] = p.InStockAmount;
                                 obj["is_in_stock_amount_visible"] = p.IsInStockAmountVisible;
+                                obj["is_available"] = p.InStockAmount > 0;
                                 obj["is_visible"] = p.IsVisible;
                                 obj["name"] = p.Name;
                                 obj["unit_name"] = p.UnitName;
                                 obj["unit_price"] = p.UnitPrice;
                                 obj["discount_amount"] = p.DiscountAmount;
                                 obj["discount_percent"] = p.DiscountPercent;
+                                obj["created_date"] = p.CreatedDate;
                                 break;
                             case "cinfo":
                                 obj["cinfo"] = p.CategoriesOfProducts.Select(c => new
@@ -208,17 +255,46 @@ namespace CSK.Admin.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(string id)
+        public IActionResult GetById(string id, bool? related)
         {
             try
             {
                 var pro = _context.Products
-                    .FirstOrDefault(c => c.Id == id && c.Active == true);
+                    .FirstOrDefault(p => p.Id == id && p.Active == true);
+
                 if (pro == null)
                     return NotFound(new
                     {
                         message = "Không tìm thấy"
                     });
+
+                dynamic relatedPro = null;
+                if (related == true)
+                {
+                    var cates = pro.CategoriesOfProducts.Select(c => c.CategoryId);
+                    relatedPro = _context.Products.Where(p =>
+                        p.Active == true && p.Id != pro.Id &&
+                        p.CategoriesOfProducts.Any(pC => cates.Contains(pC.CategoryId)))
+                            .Select(p => new
+                            {
+                                active = p.Active,
+                                code = p.Code,
+                                description = p.Description,
+                                id = p.Id,
+                                image_urls = p.ImageUrls != null ?
+                                    JsonConvert.DeserializeObject<IEnumerable<string>>(p.ImageUrls) : null,
+                                in_stock_amount = p.InStockAmount,
+                                is_in_stock_amount_visible = p.IsInStockAmountVisible,
+                                is_available = p.InStockAmount > 0,
+                                is_visible = p.IsVisible,
+                                name = p.Name,
+                                unit_name = p.UnitName,
+                                unit_price = p.UnitPrice,
+                                discount_amount = p.DiscountAmount,
+                                discount_percent = p.DiscountPercent,
+                                created_date = p.CreatedDate
+                            }).ToList();
+                }
 
                 return Ok(new
                 {
@@ -235,12 +311,15 @@ namespace CSK.Admin.Controllers
                         JsonConvert.DeserializeObject<IEnumerable<string>>(pro.ImageUrls) : null,
                     in_stock_amount = pro.InStockAmount,
                     is_in_stock_amount_visible = pro.IsInStockAmountVisible,
+                    is_available = pro.InStockAmount > 0,
                     is_visible = pro.IsVisible,
                     name = pro.Name,
                     unit_name = pro.UnitName,
                     unit_price = pro.UnitPrice,
                     discount_amount = pro.DiscountAmount,
-                    discount_percent = pro.DiscountPercent
+                    discount_percent = pro.DiscountPercent,
+                    created_date = pro.CreatedDate,
+                    related = relatedPro
                 });
             }
             catch (Exception e)

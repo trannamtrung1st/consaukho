@@ -37,8 +37,8 @@
             <div class="search-wrap">
                 <div class="container">
                     <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
-                    <form action="#" method="post">
-                        <input type="text" class="form-control" placeholder="TÌM VÀ NHẤN ENTER">
+                    <form action="/products" method="get" id="search-form" onsubmit="return checkSearch();">
+                        <input type="text" name="search" class="form-control" placeholder="TÌM VÀ NHẤN ENTER">
                     </form>
                 </div>
             </div>
@@ -53,27 +53,23 @@
                     <div class="main-nav d-none d-lg-block">
                         <nav class="site-navigation text-right text-md-center" role="navigation">
                             <ul class="site-menu js-clone-nav d-none d-lg-block">
-                                <li class="active">
+                                <li id="menu-home">
                                     <a href="/">Trang chủ</a>
                                 </li>
                                 <li class="has-children">
                                     <a href="#">Danh mục</a>
-                                    <ul class="dropdown">
-                                        <li><a href="#">Hoa bó</a></li>
-                                        <li><a href="#">Hoa loa kèn</a></li>
-                                        <li><a href="#">Hoa cẩm chướng</a></li>
-                                    </ul>
+                                    <ul class="dropdown" id="cates-menu"></ul>
                                 </li>
-                                <li><a href="#">Sản phẩm</a></li>
-                                <li><a href="#">Về chúng tôi</a></li>
+                                <li id="menu-products"><a href="/products">Sản phẩm</a></li>
+                                <li id="menu-about"><a href="#">Về chúng tôi</a></li>
                             </ul>
                         </nav>
                     </div>
                     <div class="icons">
                         <a href="#" class="icons-btn d-inline-block js-search-open"><span class="icon-search"></span></a>
-                        <a href="cart.html" class="icons-btn d-inline-block bag">
+                        <a href="/cart" class="icons-btn d-inline-block bag">
                             <span class="icon-shopping-bag"></span>
-                            <span class="number">2</span>
+                            <span class="number" id="cart-product-count"></span>
                         </a>
                         <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none"><span class="icon-menu"></span></a>
                     </div>
@@ -156,11 +152,18 @@
     <script src="/js/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 
+    <script src="~/js/main.js"></script>
+    <script>
+        var awaitFunctions = [];
+        var categories = {};
+
+    </script>
     @RenderSection("script_layout", false)
 
     <script>
+
         layoutInit();
-        
+
         function toMoneyFormat(str) {
             var count = 0;
             var newStr = "";
@@ -183,60 +186,105 @@
             return newStr + frac;
         }
 
+        function checkSearch() {
+            if (window.search === undefined) {
+                return true;
+            }
+            return false;
+        }
 
         function layoutInit() {
+            reloadCartProductsCount();
             loadLayout();
         }
 
-        function loadLayout() {
-            var isSet = setLayout();
+        async function loadLayout() {
+
+            function addCateMenu(link, text) {
+                $('#cates-menu').append(
+                    $('<li>').append(
+                        $('<a href="' + link + '">').append(text)
+                    )
+                );
+            }
+
+            var isSet = true;
+            await loadCategories();
+
+            if (window.setLayout)
+                isSet = setLayout();
 
             $.ajax({
                 url: '/api/brand-info?fields=layout',
                 type: 'get',
-                success: (data) => {
-                    data = data.layout;
+                success: async (data) => {
+                    try {
+                        data = data.layout;
 
-                    localStorage['layout'] = JSON.stringify(data);
-                    if (!isSet)
-                        setLayout();
+                        localStorage['layout'] = JSON.stringify(data);
+                        if (!isSet)
+                            setLayout();
 
-                    var footer = data.footer;
-                    if (!footer.promo.visible) {
-                        $('#lo-footer-promo').remove();
-                    } else {
-                        $('#lo-footer-promo-title').text(footer.promo.title);
-                        $('#lo-footer-promo-img').attr('src', footer.promo.img);
-                        $('#lo-footer-promo-short-description').text(footer.promo.short_description);
-                    }
-
-                    if (!footer.contact.visible) {
-                        $('#lo-footer-contact').remove();
-                    } else {
-                        var contact = footer.contact;
-                        $('#lo-footer-contact-address').html('<a href="https://www.google.com/maps/search/' + contact.address + '/">' + contact.address + '</a>');
-                        $('#lo-footer-contact-phone').text(footer.contact.phone);
-                        $('#lo-footer-contact-email').text(footer.contact.email);
-                    }
-
-                    if (!footer.quick_links.visible) {
-                        $('#lo-footer-quick-links').remove();
-                    } else {
-                        var links = footer.quick_links.links;
-                        var j = 0;
-                        var count = 0;
-                        while (j < links.length) {
-                            $('#lo-footer-quick-links-' + count++).append(
-                                $('<li><a href="' +
-                                    links[j].link + '">' + links[j].title + '</a></li>')
-                            );
-                            if (count == 3)
-                                count = 0;
-                            j++;
+                        var header = data.header;
+                        if (header.menus) {
+                            var menus = header.menus;
+                            if (menus.all) {
+                                for (var key in categories) {
+                                    var c = categories[key];
+                                    addCateMenu('/products?cate_id=' + c.id, c.name);
+                                }
+                            } else {
+                                var manual = menus.manual;
+                                for (var i = 0; i < manual.length; i++) {
+                                    if (manual[i].id) {
+                                        var cate = categories[manual[i].id];
+                                        addCateMenu('/products?cate_id=' + cate.id, cate.name);
+                                    } else {
+                                        addCateMenu(manual[i].link, manual[i].text);
+                                    }
+                                }
+                            }
                         }
-                    }
 
+                        var footer = data.footer;
+                        if (!footer.promo.visible) {
+                            $('#lo-footer-promo').remove();
+                        } else {
+                            $('#lo-footer-promo-title').text(footer.promo.title);
+                            $('#lo-footer-promo-img').attr('src', footer.promo.img);
+                            $('#lo-footer-promo-short-description').text(footer.promo.short_description);
+                        }
 
+                        if (!footer.contact.visible) {
+                            $('#lo-footer-contact').remove();
+                        } else {
+                            var contact = footer.contact;
+                            $('#lo-footer-contact-address').html('<a href="https://www.google.com/maps/search/' + contact.address + '/">' + contact.address + '</a>');
+                            $('#lo-footer-contact-phone').text(footer.contact.phone);
+                            $('#lo-footer-contact-email').text(footer.contact.email);
+                        }
+
+                        if (!footer.quick_links.visible) {
+                            $('#lo-footer-quick-links').remove();
+                        } else {
+                            var links = footer.quick_links.links;
+                            var j = 0;
+                            var count = 0;
+                            while (j < links.length) {
+                                $('#lo-footer-quick-links-' + count++).append(
+                                    $('<li><a href="' +
+                                        links[j].link + '">' + links[j].title + '</a></li>')
+                                );
+                                if (count == 3)
+                                    count = 0;
+                                j++;
+                            }
+                        }
+                    } catch (e) { }
+
+                    for (var i = 0; i < awaitFunctions.length; i++)
+                        await awaitFunctions[i];
+                    main($);
                 },
                 error: (data) => {
                     console.log(data);
@@ -244,11 +292,69 @@
                 }
             });
         }
+
+        async function loadCategories() {
+            await $.ajax({
+                url: '/api/product-categories?fields=info&fields=pcount',
+                type: 'get',
+                success: (data) => {
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        categories[data[i].id] = data[i];
+                    }
+                },
+                error: (data) => {
+                    console.log(data);
+                    data = data.responseJSON;
+                }
+            });
+        }
+
+
+        //cart
+        function reloadCartProductsCount() {
+            var cart = getCart();
+            var details = cart.details;
+            var count = 0;
+            for (var k in details)
+                count++;
+            $('#cart-product-count').text(count);
+            return count;
+        }
+
+        function addProductToCart(proId, quantity) {
+            var cart = getCart();
+            var details = cart.details;
+            var pro = details[proId];
+            if (!pro) {
+                pro = {
+                    product_id: proId,
+                    quantity: 0
+                };
+                details[proId] = pro;
+            }
+            pro.quantity += quantity;
+            saveCart(cart);
+        }
+
+        function saveCart(cart) {
+            var str = JSON.stringify(cart);
+            sessionStorage["cart"] = str;
+        }
+
+        function getCart() {
+            if (!sessionStorage["cart"])
+                sessionStorage["cart"] = JSON.stringify({
+                    details: {}
+                });
+            return JSON.parse(sessionStorage["cart"]);
+        }
+
+    //./cart
+
     </script>
 
     @RenderSection("script", false)
-
-    <script src="/js/main.js"></script>
 
 </body>
 </html>

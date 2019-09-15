@@ -61,7 +61,8 @@ namespace CSK.Admin.Controllers
                 }).ToList(),
                 ship_address = order.ShipAddress,
                 total_amount = order.TotalAmount,
-                status = order.Status
+                status = order.Status,
+                note = order.Note
             };
         }
 
@@ -281,6 +282,7 @@ namespace CSK.Admin.Controllers
                 };
                 order.PaymentType = model.payment_type;
                 order.ShipAddress = model.ship_address;
+                order.Note = model.note;
 
                 _context.SaleOrders.Add(order);
                 _context.SaveChanges();
@@ -308,8 +310,9 @@ namespace CSK.Admin.Controllers
             order.Status = "New";
 
             var details = new List<SaleOrderDetails>();
-            foreach (var d in model.details)
+            foreach (var kv in model.details)
             {
+                var d = kv.Value;
                 var pro = _context.Products.FirstOrDefault(p => p.Id == d.product_id && p.Active == true);
                 var oD = new SaleOrderDetails();
                 oD.OrderId = order.Id;
@@ -337,8 +340,9 @@ namespace CSK.Admin.Controllers
                 listMess.Add("Không có hàng trong giỏ");
             else
             {
-                foreach (var d in model.details)
+                foreach (var kv in model.details)
                 {
+                    var d = kv.Value;
                     var pro = _context.Products.FirstOrDefault(p => p.Active == true && p.Id == d.product_id);
                     if (pro == null)
                         listMess.Add("Một vài sản phẩm đã bị gỡ bỏ");
@@ -363,7 +367,7 @@ namespace CSK.Admin.Controllers
                 listMess.Add("Vui lòng để lại thông tin liên lạc");
             if (!model.payment_type.Equals("cod") && !model.payment_type.Equals("transfer"))
                 listMess.Add("Có lỗi xảy ra");
-            if (model.payment_type.Equals("code") && string.IsNullOrWhiteSpace(model.ship_address))
+            if (model.payment_type.Equals("cod") && string.IsNullOrWhiteSpace(model.ship_address))
                 listMess.Add("Thiếu địa chỉ giao hàng");
             var checkCart = ValidateCart(model);
             listMess.AddRange(checkCart);
@@ -387,7 +391,7 @@ namespace CSK.Admin.Controllers
 
     public class CartViewModel
     {
-        public IEnumerable<NewSaleOrderDetailViewModel> details { get; set; }
+        public IDictionary<string, NewSaleOrderDetailViewModel> details { get; set; }
     }
 
     public class CreateSaleOrderViewModel : CartViewModel
@@ -395,6 +399,7 @@ namespace CSK.Admin.Controllers
         public NewCustomerViewModel customer { get; set; }
         public string payment_type { get; set; }
         public string ship_address { get; set; }
+        public string note { get; set; }
 
     }
 

@@ -254,6 +254,8 @@ namespace CSK.Data.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
                 entity.Property(e => e.Description).HasMaxLength(255);
 
                 entity.Property(e => e.ImageUrls).IsUnicode(false);
