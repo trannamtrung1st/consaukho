@@ -208,9 +208,8 @@
                 );
             }
 
-            var isSet = true;
             await loadCategories();
-
+            var isSet = true;
             if (window.setLayout)
                 isSet = setLayout();
 
@@ -222,7 +221,8 @@
                         data = data.layout;
 
                         localStorage['layout'] = JSON.stringify(data);
-                        if (!isSet)
+
+                        if (!(await isSet))
                             setLayout();
 
                         var header = data.header;
