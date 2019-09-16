@@ -29,21 +29,21 @@
                     <div class="form-group row">
                         <div class="col-md-12">
                             <label class="text-black">Họ tên <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="customer.name">
+                            <input type="text" class="form-control" name="customer_name">
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <div class="col-md-12">
                             <label class="text-black">Địa chỉ <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="customer.address" placeholder="Nhập địa chỉ nhận đơn hàng">
+                            <input type="text" class="form-control" name="ship_address" placeholder="Nhập địa chỉ nhận đơn hàng">
                         </div>
                     </div>
 
                     <div class="form-group row mb-5">
                         <div class="col-md-6">
                             <label class="text-black">Số điện thoại <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="customer.phone" placeholder="092xxxxxxxx">
+                            <input type="text" class="form-control" name="customer_phone" placeholder="092xxxxxxxx">
                         </div>
                     </div>
 
@@ -90,6 +90,12 @@
                                 <label for="pm-cod" class="text-black">Ship COD</label><br />
                                 <input type="radio" id="pm-transfer" name="payment_type" value="transfer" />
                                 <label for="pm-transfer" class="text-black">Chuyển khoản</label>
+                                <p>
+                                    <b>
+                                        <i style="color:blue;" id="bank-infos">
+                                        </i>
+                                    </b>
+                                </p>
                             </div>
 
                             <div class="form-group">
@@ -105,6 +111,22 @@
         <!-- </form> -->
     </div>
 </div>
+
+@section script_layout{
+<script>
+    async function setLayout() {
+        if (!localStorage["layout"])
+            return false;
+        var cacheLayout = JSON.parse(localStorage["layout"]);
+        var bankInfos = cacheLayout.bank_infos;
+        var infoStr = '';
+        for (var i = 0; i < bankInfos.length; i++)
+            infoStr += bankInfos[i] + '<br/>';
+
+        $('#bank-infos').html(infoStr);
+    }
+</script>
+}
 
 @section script{
 
@@ -126,7 +148,7 @@
                 finalUnit = p.unit_price - p.discount_amount;
             } else if (p.discount_percent) {
                 finalUnit = p.unit_price - (p.discount_percent * p.unit_price / 100);
-            } 
+            }
 
             var finalAmount = finalUnit * quantity;
             p.final_unit = finalUnit;
@@ -170,6 +192,46 @@
             }
         });
     }
+
+    function createOrder() {
+        var order = {
+            details: getCart().details,
+            customer: {
+                name: $('[name=customer_name]').val(),
+                phone: $('[name=customer_phone]').val(),
+                //email
+            },
+            ship_address: $('[name=ship_address]').val(),
+            note: $('[name=note]').val(),
+            payment_type: $('[name=payment_type]:checked').val()
+        };
+
+        $.ajax({
+            url: '/api/sale-orders',
+            type: 'post',
+            contentType: 'application/json',
+            data: JSON.stringify(order),
+            success: (data) => {
+                clearCart();
+                location.href = "/thankyou";
+            },
+            error: (data) => {
+                console.log(data);
+                data = data.responseJSON;
+                var errStr = '';
+                var mess = data.messages;
+                for (var i = 0; i < mess.length; i++)
+                    errStr += mess[i] + '<br/>';
+                Swal.fire({
+                    title: 'Không hợp lệ',
+                    type: 'error',
+                    html: errStr,
+                })
+            }
+        });
+
+    }
+
 </script>
 
 }

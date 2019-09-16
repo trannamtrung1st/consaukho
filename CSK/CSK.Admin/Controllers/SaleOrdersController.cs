@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using TNT.Core.Helpers.Cryptography;
 using TNT.Core.Helpers.Data;
+using TNT.Core.Helpers.General;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -258,7 +259,6 @@ namespace CSK.Admin.Controllers
             }
         }
 
-        [Authorize]
         [HttpPost("")]
         public IActionResult Create(CreateSaleOrderViewModel model)
         {
@@ -297,14 +297,14 @@ namespace CSK.Admin.Controllers
                 });
             }
         }
-
+        private static readonly Random _rand = new Random();
         private SaleOrders CalculateOrder(CartViewModel model)
         {
             var order = new SaleOrders();
             order.AcceptedTime = null;
             order.CancledTime = null;
 
-            order.Id = new TokenGenerator(10).Generate();
+            order.Id = _rand.RandomStringFrom(RandomExtension.Uppers_Digits, 10);
             order.OrderTime = DateTime.Now;
             order.FinishedTime = null;
             order.Status = "New";
@@ -315,6 +315,7 @@ namespace CSK.Admin.Controllers
                 var d = kv.Value;
                 var pro = _context.Products.FirstOrDefault(p => p.Id == d.product_id && p.Active == true);
                 var oD = new SaleOrderDetails();
+                oD.Id = Guid.NewGuid().ToString();
                 oD.OrderId = order.Id;
                 oD.ProductId = pro.Id;
                 oD.Quantity = d.quantity;
