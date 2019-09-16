@@ -67,7 +67,7 @@ namespace CSK.Admin.Controllers
                     DiscountAmount = model.discount_amount,
                     DiscountPercent = model.discount_percent,
                     CategoriesOfProducts = categories,
-                    CreatedDate = DateTime.Now
+                    CreatedDate = DateTime.UtcNow
                 };
                 _context.Products.Add(pro);
                 _context.SaveChanges();
@@ -227,7 +227,7 @@ namespace CSK.Admin.Controllers
                                 obj["unit_price"] = p.UnitPrice;
                                 obj["discount_amount"] = p.DiscountAmount;
                                 obj["discount_percent"] = p.DiscountPercent;
-                                obj["created_date"] = p.CreatedDate;
+                                obj["created_date"] = Helper.ToVNStyleDateString(p.CreatedDate);
                                 break;
                             case "cinfo":
                                 obj["cinfo"] = p.CategoriesOfProducts.Select(c => new
@@ -292,7 +292,7 @@ namespace CSK.Admin.Controllers
                                 unit_price = p.UnitPrice,
                                 discount_amount = p.DiscountAmount,
                                 discount_percent = p.DiscountPercent,
-                                created_date = p.CreatedDate
+                                created_date = Helper.ToVNStyleDateString(p.CreatedDate)
                             }).ToList();
                 }
 
@@ -318,7 +318,7 @@ namespace CSK.Admin.Controllers
                     unit_price = pro.UnitPrice,
                     discount_amount = pro.DiscountAmount,
                     discount_percent = pro.DiscountPercent,
-                    created_date = pro.CreatedDate,
+                    created_date = Helper.ToVNStyleDateString(pro.CreatedDate),
                     related = relatedPro
                 });
             }

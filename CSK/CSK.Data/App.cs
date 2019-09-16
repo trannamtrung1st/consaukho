@@ -17,12 +17,27 @@ namespace CSK.Data
 
     public static class Helper
     {
+        public static DateTime? ToVNDateTime(DateTime? rawTime)
+        {
+            if (rawTime == null)
+                return null;
+            return TimeZoneInfo.ConvertTimeFromUtc(rawTime.Value,
+                TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
+        }
         public static string ToVNStyleDateString(DateTime? rawTime)
         {
             if (rawTime == null)
                 return null;
-            var time = rawTime.Value;
-            return time.Day + "/" + time.Month + "/" + time.Year + " " + time.TimeOfDay;
+            var vnTime = ToVNDateTime(rawTime).Value;
+            return vnTime.Day.D() + "/" + vnTime.Month.D() + "/" + vnTime.Year + " " + 
+                vnTime.Hour.D() + ":" + vnTime.Minute.D() + ":" + vnTime.Second.D();
+        }
+
+        public static string D(this int num)
+        {
+            if (num < 10)
+                return "0" + num;
+            return num.ToString();
         }
     }
 

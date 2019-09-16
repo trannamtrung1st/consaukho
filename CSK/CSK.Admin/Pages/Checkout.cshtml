@@ -173,24 +173,27 @@
             idsStr += '&ids=' + details[k].product_id;
         }
 
-        $.ajax({
-            url: '/api/products?fields=info' + idsStr,
-            type: 'get',
-            success: (data) => {
-                console.log(data);
-                var finalAmount = 0;
-                for (var i = 0; i < data.length; i++) {
-                    finalAmount += addProductRow(data[i], details[data[i].id].quantity);
+        if (idsStr) {
+            $.ajax({
+                url: '/api/products?fields=info' + idsStr,
+                type: 'get',
+                success: (data) => {
+                    console.log(data);
+                    var finalAmount = 0;
+                    for (var i = 0; i < data.length; i++) {
+                        finalAmount += addProductRow(data[i], details[data[i].id].quantity);
+                    }
+                    var finalAmountStr = toMoneyFormat(finalAmount.toString());
+                    $('#order-total-amount').text(finalAmountStr);
+                    $('#order-final-amount').text(finalAmountStr);
+                },
+                error: (data) => {
+                    console.log(data);
+                    data = data.responseJSON;
                 }
-                var finalAmountStr = toMoneyFormat(finalAmount.toString());
-                $('#order-total-amount').text(finalAmountStr);
-                $('#order-final-amount').text(finalAmountStr);
-            },
-            error: (data) => {
-                console.log(data);
-                data = data.responseJSON;
-            }
-        });
+            });
+        }
+
     }
 
     function createOrder() {
@@ -213,7 +216,17 @@
             data: JSON.stringify(order),
             success: (data) => {
                 clearCart();
-                location.href = "/thankyou";
+                Swal.fire({
+                    type: 'success',
+                    title: 'Đang xử lí',
+                    text: 'Vui lòng chờ trong giây lát',
+                    showConfirmButton: false,
+                    showCancelButton: false,
+                    allowOutsideClick: false
+                });
+                setTimeout(() => {
+                    location.href = "/thankyou";
+                }, 2000);
             },
             error: (data) => {
                 console.log(data);

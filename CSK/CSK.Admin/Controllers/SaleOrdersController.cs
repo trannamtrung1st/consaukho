@@ -83,17 +83,17 @@ namespace CSK.Admin.Controllers
                 if (value.Equals("Accepted"))
                 {
                     changed = true;
-                    order.AcceptedTime = DateTime.Now;
+                    order.AcceptedTime = DateTime.UtcNow;
                 }
                 else if (value.Equals("Finished"))
                 {
                     changed = true;
-                    order.FinishedTime = DateTime.Now;
+                    order.FinishedTime = DateTime.UtcNow;
                 }
                 else if (value.Equals("Cancled"))
                 {
                     changed = true;
-                    order.CancledTime = DateTime.Now;
+                    order.CancledTime = DateTime.UtcNow;
                 }
                 if (changed)
                 {
@@ -305,7 +305,7 @@ namespace CSK.Admin.Controllers
             order.CancledTime = null;
 
             order.Id = _rand.RandomStringFrom(RandomExtension.Uppers_Digits, 10);
-            order.OrderTime = DateTime.Now;
+            order.OrderTime = DateTime.UtcNow;
             order.FinishedTime = null;
             order.Status = "New";
 
@@ -324,6 +324,7 @@ namespace CSK.Admin.Controllers
                     oD.FinalAmount = oD.TotalAmount - pro.DiscountAmount;
                 else if (pro.DiscountPercent != null)
                     oD.FinalAmount = oD.TotalAmount - (oD.TotalAmount * pro.DiscountPercent / 100.0);
+                else oD.FinalAmount = oD.TotalAmount;
                 details.Add(oD);
             }
             order.SaleOrderDetails = details;
