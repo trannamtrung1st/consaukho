@@ -7,8 +7,10 @@
 <div class="bg-light py-3">
     <div class="container">
         <div class="row">
-            <div class="col-md-12 mb-0"><a href="/">Trang chủ</a> 
-            <span class="mx-2 mb-0">/</span> <strong class="text-black">Cảm ơn</strong></div>
+            <div class="col-md-12 mb-0">
+                <a href="/">Trang chủ</a>
+                <span class="mx-2 mb-0">/</span> <strong class="text-black">Cảm ơn</strong>
+            </div>
         </div>
     </div>
 </div>
@@ -20,11 +22,27 @@
                 <span class="icon-check_circle display-3 text-success"></span>
                 <h2 class="display-3 text-black">Xin cảm ơn!</h2>
                 <p class="lead mb-5">
-                    Đơn hàng của bạn đã được gửi đi. <br/>
-                    Chúng tôi sẽ liên hệ và xác nhận đơn hàng trong thời gian ngắn nhất
+                    Đơn hàng của bạn đã được gửi đi. <br />                                 
+                    <span id="confirm-text"></span>
                 </p>
                 <p><a href="/products" class="btn btn-sm height-auto px-4 py-3 btn-primary">Tiếp tục Shopping</a></p>
             </div>
         </div>
     </div>
 </div>
+
+
+@section script_layout{
+    <script>
+        async function setLayout() {
+            if (!localStorage["layout"])
+                return false;
+            var cacheLayout = JSON.parse(localStorage["layout"]);
+            var thankyou = cacheLayout.thankyou;
+
+            var confirm = thankyou.confirm_text;
+            $('#confirm-text').text(confirm);
+            return true;
+        }
+    </script>
+}

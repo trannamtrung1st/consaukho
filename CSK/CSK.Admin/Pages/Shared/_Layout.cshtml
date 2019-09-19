@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/css/jquery-ui.css">
     <link rel="stylesheet" href="/css/owl.carousel.min.css">
     <link rel="stylesheet" href="/css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 
     <link rel="stylesheet" href="/css/aos.css">
@@ -22,6 +23,39 @@
     <style>
         body {
             font-family: Calibri;
+        }
+
+        .site-logo a {
+            border: none;
+        }
+
+        .site-section {
+            padding-top: 77px;
+            padding-bottom: 0px;
+        }
+
+        .owl-stage {
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+        }
+
+        footer {
+            padding-bottom: 25px !important;
+        }
+
+        .product-item .product-category {
+            top: unset;
+            bottom: 0;
+        }
+
+        .fa-facebook,.fa-instagram {
+            color: #ee4266;
+            padding: 5px 7px 3px 7px;
+            font-size: 150%;
+            border-radius: 5px;
+            position: absolute;
+            left: -5px;
+            bottom: -2px;
         }
     </style>
 
@@ -61,7 +95,8 @@
                                     <ul class="dropdown" id="cates-menu"></ul>
                                 </li>
                                 <li id="menu-products"><a href="/products">Sản phẩm</a></li>
-                                <li id="menu-about"><a href="#">Về chúng tôi</a></li>
+                                <li id="menu-about"><a href="#" onclick="scrollToAnchor('lo-footer-contact'); return false;">Về chúng tôi</a></li>
+                                <li id="menu-contact"><a href="#" onclick="scrollToAnchor('lo-footer-contact'); return false;">Liên hệ</a></li>
                             </ul>
                         </nav>
                     </div>
@@ -93,7 +128,7 @@
                     <div id="lo-footer-quick-links" class="col-lg-5 ml-auto mb-5 mb-lg-0">
                         <div class="row">
                             <div class="col-md-12">
-                                <h3 class="footer-heading mb-4">Quick Links</h3>
+                                <h3 class="footer-heading mb-4">Đường dẫn nhanh</h3>
                             </div>
                             <div class="col-md-6 col-lg-4">
                                 <ul id="lo-footer-quick-links-0" class="list-unstyled"></ul>
@@ -109,11 +144,13 @@
 
                     <div id="lo-footer-contact" class="col-md-6 col-lg-3">
                         <div class="block-5 mb-5">
-                            <h3 class="footer-heading mb-4">Contact Info</h3>
+                            <h3 class="footer-heading mb-4">Liên hệ</h3>
                             <ul class="list-unstyled">
                                 <li id="lo-footer-contact-address" class="address">203 Fake St. Mountain View, San Francisco, California, USA</li>
                                 <li id="lo-footer-contact-phone" class="phone"><a href="tel://23923929210">+2 392 3929 210</a></li>
                                 <li id="lo-footer-contact-email" class="email">emailaddress@domain.com</li>
+                                <li id="lo-footer-contact-facebook"><a href="#"><i class="fa fa-facebook"></i><span>Fb: Con Sâu Khô</span></a></li>
+                                <li id="lo-footer-contact-instagram"><a href="#"><i class="fa fa-instagram"></i><span>Ins: consaukhoig</span></a></li>
                             </ul>
                         </div>
 
@@ -128,17 +165,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row pt-5 mt-5 text-center">
-                    <div class="col-md-12">
-                        <p>
-                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                            Copyright &copy;
-                            <script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" class="text-primary">Colorlib</a>
-                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                        </p>
-                    </div>
 
-                </div>
             </div>
         </footer>
     </div>
@@ -156,13 +183,21 @@
     <script>
         var awaitFunctions = [];
         var categories = {};
-
+        Date.prototype.addDays = function(days) {
+            var date = new Date(this.valueOf());
+            date.setDate(date.getDate() + days);
+            return date;
+        }
     </script>
     @RenderSection("script_layout", false)
 
     <script>
 
         layoutInit();
+        function scrollToAnchor(aid) {
+            var aTag = $("#" + aid + "");
+            $('html,body').animate({ scrollTop: aTag.offset().top }, 'slow');
+        }
 
         function toMoneyFormat(str) {
             var count = 0;
@@ -225,7 +260,9 @@
                         if (!(await isSet))
                             setLayout();
 
-                        var header = data.header;
+                        var layout = data.layout;
+
+                        var header = layout.header;
                         if (header.menus) {
                             var menus = header.menus;
                             if (menus.all) {
@@ -246,7 +283,7 @@
                             }
                         }
 
-                        var footer = data.footer;
+                        var footer = layout.footer;
                         if (!footer.promo.visible) {
                             $('#lo-footer-promo').remove();
                         } else {
@@ -260,8 +297,13 @@
                         } else {
                             var contact = footer.contact;
                             $('#lo-footer-contact-address').html('<a href="https://www.google.com/maps/search/' + contact.address + '/">' + contact.address + '</a>');
-                            $('#lo-footer-contact-phone').text(footer.contact.phone);
-                            $('#lo-footer-contact-email').text(footer.contact.email);
+                            $('#lo-footer-contact-phone').text(contact.phone);
+                            $('#lo-footer-contact-email').text(contact.email);
+                            
+                            $('#lo-footer-contact-facebook a').attr('href', contact.facebook.link);
+                            $('#lo-footer-contact-facebook span').text(contact.facebook.text);
+                            $('#lo-footer-contact-instagram a').attr('href', contact.instagram.link);
+                            $('#lo-footer-contact-instagram span').text(contact.instagram.text);
                         }
 
                         if (!footer.quick_links.visible) {
@@ -280,6 +322,7 @@
                                 j++;
                             }
                         }
+
                     } catch (e) { }
 
                     for (var i = 0; i < awaitFunctions.length; i++)

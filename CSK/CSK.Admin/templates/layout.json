@@ -1,1 +1,214 @@
-{"banner":{"visible":false,"text_1":{"value":"Bộ sưu tập mùa hè","visible":true},"text_2":{"value":"BIG SALES OFF","visible":true},"link_3":{"value":"Mua ngay","visible":true,"link":"/admin"},"img":"/images/model_3.png"},"categories":{"visible":true,"title":"Bộ sưu tập","cate1":{"id":"1","name":"Hoa bó","pcount":24,"image_url":"/images/model_4.png"},"cate2":{"id":"2","name":"Hoa lan","pcount":22,"image_url":"/images/model_5.png"},"cate3":{"id":"3","name":"Hoa loa kèn","pcount":10,"image_url":"/images/model_6.png"}},"products":{"visible":true,"title":"Sản phẩm khá phổ biến","auto":null,"manual":[{"image_urls":["/api/files?path=/asdas.jpg"],"name":"Hoa loa kèn số dách","unit_price":10000,"discount_amount":5000,"discount_percent":null},{"image_urls":["/api/files?path=/asdas.jpg"],"name":"Hoa hòe","unit_price":10000,"discount_amount":null,"discount_percent":10}]},"most_rated":{"visible":true,"title":"Đánh giá cao","manual":[{"image_urls":["/api/files?path=/asdas.jpg"],"name":"Hoa loa kèn số dách","unit_price":10000,"discount_amount":5000,"discount_percent":null},{"image_urls":["/api/files?path=/asdas.jpg"],"name":"Hoa hòe","unit_price":10000,"discount_amount":null,"discount_percent":10},{"image_urls":["/api/files?path=/asdas.jpg"],"name":"Hoa loa kèn số dách","unit_price":10000,"discount_amount":5000,"discount_percent":null},{"image_urls":["/api/files?path=/asdas.jpg"],"name":"Hoa hòe","unit_price":10000,"discount_amount":null,"discount_percent":10},{"image_urls":["/api/files?path=/asdas.jpg"],"name":"Hoa loa kèn số dách","unit_price":10000,"discount_amount":5000,"discount_percent":null},{"image_urls":["/api/files?path=/asdas.jpg"],"name":"Hoa hòe","unit_price":10000,"discount_amount":null,"discount_percent":10}]},"banner_bottom":{"visible":true,"text_1":{"value":"Bộ sưu tập mùa hè","visible":true},"text_2":{"value":"BIG SALES OFF","visible":true},"link_3":{"value":"Mua ngay","visible":true,"link":"/admin"},"img":"/images/model_6.png"},"footer":{"promo":{"visible":true,"img":"/images/model_4.png","title":"Tìm cái hay nhất","short_description":"Từ hôm nay tới hết CN","link":"/"},"quick_links":{"visible":true,"links":[{"title":"Fanpage 1","link":"/"},{"title":"Fanpage 2","link":"/"},{"title":"Fanpage 3","link":"/"},{"title":"Fanpage 4","link":"/"}]},"contact":{"visible":true,"address":"14 Khiếu Năng Tĩnh","phone":"09125284522","email":"trannamtrung1st@gmail.com"}}}
+{
+  "home": {
+    "banner": {
+      "images": [
+        {
+          "link": "/",
+          "img": "/api/files?path=/banner.jpg"
+        },
+        {
+          "link": "/",
+          "img": "/api/files?path=/5c250b8c819a4e917d8b4572.hoa-7-ngay.jpg"
+        }
+      ],
+      "autoplay": 5000
+    },
+    "categories": {
+      "visible": true,
+      "title": "Bộ sưu tập",
+      "cate1": {
+        "id": "0d4d86f4-9f75-489f-85a2-d3dde55346ef",
+        "name": "",
+        "pcount": "",
+        "image_url": "",
+        "link": ""
+      },
+      "cate2": {
+        "id": "2ab6fd0c-5595-4be5-ac8e-3ff371fee3e1",
+        "name": "",
+        "pcount": "",
+        "image_url": "",
+        "link": ""
+      },
+      "cate3": {
+        "id": "e4ddcbb9-5f96-4601-b856-2df8039a5f5d",
+        "name": "",
+        "pcount": "",
+        "image_url": "",
+        "link": ""
+      }
+    },
+    "products": {
+      "visible": true,
+      "title": "Đang hot",
+      "auto": 8,
+      "manual": [
+        {
+          "image_urls": [
+            "/api/files?path=/asdas.jpg"
+          ],
+          "name": "Hoa loa kèn số dách",
+          "unit_price": 10000,
+          "discount_amount": 5000,
+          "discount_percent": null
+        },
+        {
+          "image_urls": [
+            "/api/files?path=/asdas.jpg"
+          ],
+          "name": "Hoa hòe",
+          "unit_price": 10000,
+          "discount_amount": null,
+          "discount_percent": 10
+        }
+      ]
+    },
+    "most_rated": {
+      "visible": true,
+      "title": "Đánh giá cao",
+      "manual": [
+        {
+          "image_urls": [
+            "/api/files?path=/NguyenBinhVTV-162226012212-thailand.jpg"
+          ],
+          "name": "Hoa loa kèn số dách",
+          "unit_price": 10000,
+          "discount_amount": 5000,
+          "discount_percent": null
+        },
+        {
+          "image_urls": [
+            "/api/files?path=/NguyenBinhVTV-162226012212-thailand.jpg"
+          ],
+          "name": "Hoa loa kèn số dách",
+          "unit_price": 10000,
+          "discount_amount": 5000,
+          "discount_percent": null
+        },
+        {
+          "image_urls": [
+            "/api/files?path=/NguyenBinhVTV-162226012212-thailand.jpg"
+          ],
+          "name": "Hoa loa kèn số dách",
+          "unit_price": 10000,
+          "discount_amount": 5000,
+          "discount_percent": null
+        },
+        {
+          "image_urls": [
+            "/api/files?path=/NguyenBinhVTV-162226012212-thailand.jpg"
+          ],
+          "name": "Hoa loa kèn số dách",
+          "unit_price": 10000,
+          "discount_amount": 5000,
+          "discount_percent": null
+        },
+        {
+          "image_urls": [
+            "/api/files?path=/NguyenBinhVTV-162226012212-thailand.jpg"
+          ],
+          "name": "Hoa loa kèn số dách",
+          "unit_price": 10000,
+          "discount_amount": 5000,
+          "discount_percent": null
+        }
+      ]
+    },
+    "banner_bottom": {
+      "images": [
+        {
+          "link": "/",
+          "img": "/api/files?path=/banner.jpg"
+        },
+        {
+          "link": "/",
+          "img": "/api/files?path=/5c250b8c819a4e917d8b4572.hoa-7-ngay.jpg"
+        }
+      ],
+      "autoplay": 5000
+    }
+  },
+  "checkout": {
+    "bank_infos": [
+      "Thông tin chuyển khoản:",
+      "0421-5122-4211-4211 VP.Bank Con Sâu Khô"
+    ],
+    "ship_times": [
+      "Từ 6h đến 12h",
+      "Từ 13h đến 17h",
+      "Từ 18h đến 22h"
+    ],
+    "spacing_days": 6
+  },
+  "layout": {
+    "footer": {
+      "promo": {
+        "visible": true,
+        "img": "/api/files?path=/hoa-song-doi-chau-hoa-dep.jpg",
+        "title": "Tìm cái hay nhất",
+        "short_description": "Từ hôm nay tới hết CN",
+        "link": "/"
+      },
+      "quick_links": {
+        "visible": true,
+        "links": [
+          {
+            "title": "Fanpage 1",
+            "link": "/"
+          },
+          {
+            "title": "Fanpage 2",
+            "link": "/"
+          },
+          {
+            "title": "Fanpage 3",
+            "link": "/"
+          },
+          {
+            "title": "Fanpage 4",
+            "link": "/"
+          }
+        ]
+      },
+      "contact": {
+        "visible": true,
+        "address": "14 Kha Vạn Cân",
+        "phone": "09125284522",
+        "email": "trannamtrung1st@gmail.com",
+        "facebook": {
+          "text": "Fb: Con Sâu Khô FB",
+          "link": "#"
+        },
+        "instagram": {
+          "text": "Ins: consaukhoig IG",
+          "link": "#"
+        }
+      }
+    },
+    "header": {
+      "menus": {
+        "manual": [
+          {
+            "text": "Hoa bó",
+            "link": "#",
+            "id": null
+          },
+          {
+            "text": "Hoa tuơi",
+            "link": "#",
+            "id": null
+          },
+          {
+            "text": "Hoa kiểng",
+            "link": "#",
+            "id": null
+          }
+        ],
+        "all": true
+      }
+    }
+  },
+  "thankyou": {
+    "confirm_text": "Chúng tôi sẽ liên hệ và xác nhận đơn hàng trong vòng 24h tới"
+  }
+}

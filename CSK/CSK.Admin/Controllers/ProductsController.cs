@@ -292,7 +292,7 @@ namespace CSK.Admin.Controllers
                                 unit_price = p.UnitPrice,
                                 discount_amount = p.DiscountAmount,
                                 discount_percent = p.DiscountPercent,
-                                created_date = Helper.ToVNStyleDateString(p.CreatedDate)
+                                created_date = Helper.ToVNStyleDateString(p.CreatedDate, true)
                             }).ToList();
                 }
 

@@ -15,30 +15,42 @@
 
     .product-img-container {
         position: relative;
+        overflow: hidden;
     }
+
+        .product-img-container img {
+            width: 100%;
+            transition: 0.5s;
+            margin-bottom: 10px;
+        }
 
     .btn-detail {
         opacity: 0;
-        background: rgba(255,255,255,0.7);
-        width: 101%;
-        height: 101%;
+        background: rgba(0,0,0,0.7);
+        width: 110%;
+        /*height: 315px;*/
         text-align: center;
         position: absolute;
-        top: 50%;
+        top: 47%;
         left: 50%;
         transform: translate(-50%, -50%);
     }
 
-        .btn-detail span {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            display: inline-block;
-            transform: translate(-50%, -50%);
-            color: black;
-            font-size: 170%;
-        }
+    .btn-detail-special {
+        top: 50%;
+        /*height: 396.66px;*/
+    }
+
+    .btn-detail i {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        display: inline-block;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 170%;
+    }
 
     .custom-price {
         color: #ee4266;
@@ -47,6 +59,11 @@
         .custom-price del {
             color: gray;
         }
+
+    .product-item {
+        transition: 0.5s;
+        background-size: 100% 100% !important;
+    }
 
     .discount {
         background-color: orange;
@@ -57,33 +74,23 @@
 
     .custom-product {
         overflow: hidden;
-        padding-top: 15px;
-        padding-bottom: 15px;
         transition: 0.5s;
         font-size: 130%;
         font-weight: normal;
     }
 
-        .custom-product img {
-            height: 320px;
-            width: 100%;
-        }
-
         .custom-product a {
             font-size: 130%;
         }
 
-        .custom-product img {
-            margin-bottom: 10px;
-            transition: 0.5s;
+        .custom-product:hover .btn-detail {
+            opacity: 1;
         }
 
-        /*.custom-product:hover .btn-detail {
-            opacity: 1;
-        }*/
-        .custom-product:hover {
-            box-shadow: 0 0 20px gray;
+        .custom-product:hover img {
+            filter: brightness(0.4);
         }
+
 </style>
 }
 
@@ -325,12 +332,12 @@
             }
 
             $('#products-container').append(
-                $('<div class="custom-product col-lg-6 col-md-6 item-entry mb-4">').append(
+                $('<div class="custom-product col-lg-4 col-md-4 item-entry mb-4">').append(
                     $('<div class="product-img-container">').append(
                         $('<a href="/detail/' + p.id + '" class="d-block">').append(
                             $('<img src="' + (p.image_urls ? p.image_urls[0] : '') + '" alt="Image" class="img-fluid">')
                         )
-                    ).append('<a href="/detail/' + p.id + '" class="btn-detail"><span>XEM</span></a>')
+                    ).append('<a href="/detail/' + p.id + '" class="btn-detail"><i class="fa fa-search"></i></a>')
                 ).append(
                     $('<h2 class="item-title">').append(
                         $('<a href="/detail/' + p.id + '">').append(p.name)

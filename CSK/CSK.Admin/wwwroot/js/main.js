@@ -15,22 +15,22 @@ function main($) {
             center: false,
             items: 1,
             loop: false,
-            stagePadding: 15,
-            margin: 20,
+            stagePadding: 0,
+            margin: 0,
             nav: true,
             navText: ['<span class="icon-arrow_back">', '<span class="icon-arrow_forward">'],
             responsive: {
                 600: {
-                    margin: 20,
+                    margin: 0,
                     items: 2
                 },
                 1000: {
-                    margin: 20,
-                    items: 3
+                    margin: 0,
+                    items: 4
                 },
                 1200: {
-                    margin: 20,
-                    items: 3
+                    margin: 0,
+                    items: 4
                 }
             }
         });

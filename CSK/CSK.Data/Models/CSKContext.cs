@@ -25,7 +25,6 @@ namespace CSK.Data.Models
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<BrandInfo> BrandInfo { get; set; }
         public virtual DbSet<CategoriesOfProducts> CategoriesOfProducts { get; set; }
-        public virtual DbSet<Customers> Customers { get; set; }
         public virtual DbSet<ProductCategories> ProductCategories { get; set; }
         public virtual DbSet<Products> Products { get; set; }
         public virtual DbSet<SaleOrderDetails> SaleOrderDetails { get; set; }
@@ -204,24 +203,6 @@ namespace CSK.Data.Models
                     .HasConstraintName("FK_CategoriesOfProducts_Products");
             });
 
-            modelBuilder.Entity<Customers>(entity =>
-            {
-                entity.Property(e => e.Id)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.Email)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Name).HasMaxLength(100);
-
-                entity.Property(e => e.Phone)
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
-            });
-
             modelBuilder.Entity<ProductCategories>(entity =>
             {
                 entity.Property(e => e.Id)
@@ -302,12 +283,23 @@ namespace CSK.Data.Models
 
                 entity.Property(e => e.CancledTime).HasColumnType("datetime");
 
-                entity.Property(e => e.CustomerId)
-                    .IsRequired()
-                    .HasMaxLength(100)
+                entity.Property(e => e.CustomerAddress).HasMaxLength(500);
+
+                entity.Property(e => e.CustomerEmail)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CustomerName).HasMaxLength(100);
+
+                entity.Property(e => e.CustomerPhone)
+                    .HasMaxLength(20)
                     .IsUnicode(false);
 
                 entity.Property(e => e.FinishedTime).HasColumnType("datetime");
+
+                entity.Property(e => e.Message).HasMaxLength(255);
+
+                entity.Property(e => e.Note).HasMaxLength(255);
 
                 entity.Property(e => e.OrderTime).HasColumnType("datetime");
 
@@ -315,17 +307,25 @@ namespace CSK.Data.Models
                     .HasMaxLength(10)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ShipAddress).HasMaxLength(500);
+                entity.Property(e => e.ReceiverAddress).HasMaxLength(500);
+
+                entity.Property(e => e.ReceiverName).HasMaxLength(100);
+
+                entity.Property(e => e.ReceiverPhone)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ShipDate).HasColumnType("date");
+
+                entity.Property(e => e.ShipTime).HasMaxLength(255);
+
+                entity.Property(e => e.ShipType)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Status)
                     .HasMaxLength(20)
                     .IsUnicode(false);
-
-                entity.HasOne(d => d.Customer)
-                    .WithMany(p => p.SaleOrders)
-                    .HasForeignKey(d => d.CustomerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SaleOrders_Customers");
             });
         }
     }

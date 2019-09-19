@@ -34,17 +34,9 @@ namespace CSK.Admin.Controllers
 
         private object ToOrderResponse(SaleOrders order)
         {
-            var cus = order.Customer;
             return new
             {
                 id = order.Id,
-                customer = new
-                {
-                    id = cus.Id,
-                    name = cus.Name,
-                    phone = cus.Phone,
-                    email = cus.Email
-                },
                 final_amount = order.FinalAmount,
                 order_time = Helper.ToVNStyleDateString(order.OrderTime),
                 accepted_time = Helper.ToVNStyleDateString(order.AcceptedTime),
@@ -60,16 +52,26 @@ namespace CSK.Admin.Controllers
                     total_amount = oD.TotalAmount,
                     final_amount = oD.FinalAmount
                 }).ToList(),
-                ship_address = order.ShipAddress,
+                customer_name = order.CustomerName,
+                customer_phone = order.CustomerPhone,
+                customer_email = order.CustomerEmail,
+                customer_address = order.CustomerAddress,
+                receiver_name = order.ReceiverName,
+                receiver_phone = order.ReceiverPhone,
+                receiver_address = order.ReceiverAddress,
+                ship_type = order.ShipType,
+                ship_date = Helper.ToVNStyleDateString(order.ShipDate, false),
+                ship_time = order.ShipTime,
                 total_amount = order.TotalAmount,
                 status = order.Status,
+                message = order.Message,
                 note = order.Note
             };
         }
 
         [Authorize]
         [HttpPatch("{id}/status")]
-        public IActionResult ProcessOrder(string id, string value)
+        public IActionResult ProcessOrderStatus(string id, string value)
         {
             try
             {
@@ -181,22 +183,19 @@ namespace CSK.Admin.Controllers
                             case "info":
                                 obj["accepted_time"] = Helper.ToVNStyleDateString(o.AcceptedTime);
                                 obj["cancled_time"] = Helper.ToVNStyleDateString(o.CancledTime);
-                                obj["customer_id"] = o.CustomerId;
                                 obj["final_amount"] = o.FinalAmount;
                                 obj["id"] = o.Id;
                                 obj["order_time"] = Helper.ToVNStyleDateString(o.OrderTime);
                                 obj["finished_time"] = Helper.ToVNStyleDateString(o.FinishedTime);
                                 obj["payment_type"] = o.PaymentType;
-                                obj["ship_address"] = o.ShipAddress;
                                 obj["status"] = o.Status;
                                 obj["total_amount"] = o.TotalAmount;
                                 break;
                             case "cinfo":
-                                obj["customer"] = new
-                                {
-                                    id = o.CustomerId,
-                                    name = o.Customer.Name
-                                };
+                                obj["customer_name"] = o.CustomerName;
+                                obj["customer_phone"] = o.CustomerName;
+                                obj["customer_email"] = o.CustomerName;
+                                obj["customer_address"] = o.CustomerName;
                                 break;
                         }
                     }
@@ -272,20 +271,30 @@ namespace CSK.Admin.Controllers
                     });
                 var order = CalculateOrder(model);
 
-                var cus = model.customer;
-                order.Customer = new Customers()
-                {
-                    Email = cus.email,
-                    Id = Guid.NewGuid().ToString(),
-                    Name = cus.name,
-                    Phone = cus.phone
-                };
+                order.CustomerAddress = model.customer_address;
+                order.CustomerEmail = model.customer_email;
+                order.CustomerName = model.customer_name;
+                order.CustomerPhone = model.customer_phone;
+                order.ReceiverAddress = model.receiver_address;
+                order.ReceiverName = model.receiver_name;
+                order.ReceiverPhone = model.receiver_phone;
+                order.ShipType = model.ship_type;
+                order.ShipDate = model.ship_date;
+                order.ShipTime = model.ship_time;
                 order.PaymentType = model.payment_type;
-                order.ShipAddress = model.ship_address;
+                order.Message = model.message;
                 order.Note = model.note;
 
                 _context.SaleOrders.Add(order);
                 _context.SaveChanges();
+
+                var mailResult = Gmail.SendEmail("Có đơn hàng mới",
+                    $"<p><b>{order.CustomerName}</b> đã đặt 1 đơn hàng</p>" +
+                    $"<p>SĐT: <b>{order.CustomerPhone}</b></p>" +
+                    $"<p>Email: <b>{order.CustomerEmail}</b></p>" +
+                    $"<p><a href='{App.Instance.BaseAddress}admin/order/{order.Id}'>Xem chi tiết</a></p>",
+                    App.Instance.OwnerMails);
+
                 return Ok(ToOrderResponse(order));
             }
             catch (Exception e)
@@ -362,27 +371,23 @@ namespace CSK.Admin.Controllers
         private IEnumerable<string> ValidateCreate(CreateSaleOrderViewModel model)
         {
             var listMess = new List<string>();
+            if (string.IsNullOrWhiteSpace(model.customer_name))
+                listMess.Add("Thiếu tên người mua");
 
-            var cus = model.customer;
-            if (string.IsNullOrWhiteSpace(cus.phone) &&
-                string.IsNullOrWhiteSpace(cus.email))
+            if (string.IsNullOrWhiteSpace(model.customer_phone) &&
+                string.IsNullOrWhiteSpace(model.customer_email))
                 listMess.Add("Vui lòng để lại thông tin liên lạc");
-            if (!model.payment_type.Equals("cod") && !model.payment_type.Equals("transfer"))
+
+            if ((!model.payment_type.Equals("cod") && !model.payment_type.Equals("transfer"))
+                || (string.IsNullOrWhiteSpace(model.ship_type))
+                || model.ship_date == null || string.IsNullOrWhiteSpace(model.ship_time))
                 listMess.Add("Có lỗi xảy ra");
-            if (model.payment_type.Equals("cod") && string.IsNullOrWhiteSpace(model.ship_address))
-                listMess.Add("Thiếu địa chỉ giao hàng");
+
             var checkCart = ValidateCart(model);
             listMess.AddRange(checkCart);
             return listMess;
         }
 
-    }
-
-    public class NewCustomerViewModel
-    {
-        public string name { get; set; }
-        public string phone { get; set; }
-        public string email { get; set; }
     }
 
     public class NewSaleOrderDetailViewModel
@@ -398,9 +403,18 @@ namespace CSK.Admin.Controllers
 
     public class CreateSaleOrderViewModel : CartViewModel
     {
-        public NewCustomerViewModel customer { get; set; }
+        public string customer_name { get; set; }
+        public string customer_phone { get; set; }
+        public string customer_email { get; set; }
+        public string customer_address { get; set; }
+        public string receiver_name { get; set; }
+        public string receiver_phone { get; set; }
+        public string receiver_address { get; set; }
+        public string ship_type { get; set; }
+        public DateTime? ship_date { get; set; }
+        public string ship_time { get; set; }
         public string payment_type { get; set; }
-        public string ship_address { get; set; }
+        public string message { get; set; }
         public string note { get; set; }
 
     }

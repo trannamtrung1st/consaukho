@@ -1,4 +1,5 @@
 ﻿@page
+@using CSK.Data
 @model CSK.Admin.Pages.CheckoutModel
 @{
 }
@@ -25,34 +26,97 @@
             <div class="col-md-6 mb-5 mb-md-0">
                 <h2 class="h3 mb-3 text-black">Chi tiết đơn hàng</h2>
                 <div class="p-3 p-lg-5 border">
-
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            <label class="text-black">Họ tên <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="customer_name">
+                    <div id="buyer-info">
+                        <h5 class="text-black">Thông tin người mua</h5>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label class="text-black">Họ tên <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="customer_name" placeholder="Họ tên người mua">
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            <label class="text-black">Địa chỉ <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="ship_address" placeholder="Nhập địa chỉ nhận đơn hàng">
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label class="text-black">Địa chỉ</label>
+                                <input type="text" class="form-control" name="customer_address" placeholder="Nhập địa chỉ người mua">
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group row mb-5">
-                        <div class="col-md-6">
-                            <label class="text-black">Số điện thoại <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="customer_phone" placeholder="092xxxxxxxx">
+                        <div class="form-group row mb-5">
+                            <div class="col-md-6">
+                                <label class="text-black">Số điện thoại <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="customer_phone" placeholder="092xxxxxxxx">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-black">Email <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="customer_email" placeholder="abc@gmail.com">
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="c_order_notes" class="text-black">Ghi chú</label>
-                        <textarea name="note" cols="30" rows="5" class="form-control" placeholder="Ghi chú cần thiết"></textarea>
                     </div>
+                    <div id="receiver-info">
+                        <div>
+                            <h5 class="text-black" style="display:inline-block">Thông tin người nhận</h5> <i class="text-black">(để trống nếu chính bạn nhận hàng)</i>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label class="text-black">Họ tên</label>
+                                <input type="text" class="form-control" name="receiver_name" placeholder="Họ tên người nhận">
+                            </div>
+                        </div>
 
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label class="text-black">Địa chỉ</label>
+                                <input type="text" class="form-control" name="receiver_address" placeholder="Nhập địa chỉ người nhận">
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-5">
+                            <div class="col-md-6">
+                                <label class="text-black">Số điện thoại</label>
+                                <input type="text" class="form-control" name="receiver_phone" placeholder="092xxxxxxxx">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div id="ship-info">
+                        <h5 class="text-black">Thông tin giao hàng</h5>
+
+                        <div class="form-group">
+                            <div>
+                                <input type="radio" id="inp-ship-normal" name="ship_type" value="normal" checked />
+                                <label for="inp-ship-normal" class="text-black">Giao bình thường: sau <span id="spacing-days"></span> ngày kể từ ngày đặt</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="inp-ship-fast" name="ship_type" value="fast" />
+                                <label for="inp-ship-fast" class="text-black">Giao gấp <i>(Con Sâu Khô sẽ liên hệ và xác nhận lại)</i></label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-black">Ngày giao hàng <span class="text-danger">*</span></label>
+                                <input class="form-control" type="date" name="ship_date" onchange="checkShipDate()" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-black">Khung giờ <span class="text-danger">*</span></label>
+                                <select class="form-control" name="ship_time">
+                                    <!--dynamic-->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="text-black">Lời nhắn</label>
+                            <textarea name="message" cols="30" rows="5" class="form-control" placeholder="Vd: lời chúc, lời yêu thương ..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="text-black">Ghi chú</label>
+                            <textarea name="note" cols="30" rows="5" class="form-control" placeholder="Vd: gói màu xanh, giấu tên người gửi ..."></textarea>
+                        </div>
+
+                    </div>
                 </div>
+
             </div>
             <div class="col-md-6">
 
@@ -63,7 +127,7 @@
                             <table class="table site-block-order-table mb-5" id="tbl-order-detail">
                                 <thead>
                                     <tr>
-                                        <th>Sản phẩm</th>
+                                        <th style="width:60%">Sản phẩm</th>
                                         <th>Tổng cộng (VND)</th>
                                     </tr>
                                 </thead>
@@ -76,7 +140,7 @@
                                         <td class="text-black" id="order-total-amount"></td>
                                     </tr>
                                     <tr>
-                                        <td class="text-black font-weight-bold"><strong>Tổng cộng</strong></td>
+                                        <td class="text-black"><strong><b>Tổng cộng</b></strong> (chưa gồm phí ship)</td>
                                         <td class="text-black font-weight-bold">
                                             <strong id="order-final-amount"></strong>
                                         </td>
@@ -113,29 +177,101 @@
 </div>
 
 @section script_layout{
-<script>
-    async function setLayout() {
-        if (!localStorage["layout"])
-            return false;
-        var cacheLayout = JSON.parse(localStorage["layout"]);
-        var bankInfos = cacheLayout.bank_infos;
-        var infoStr = '';
-        for (var i = 0; i < bankInfos.length; i++)
-            infoStr += bankInfos[i] + '<br/>';
+    <script>
+        async function setLayout() {
+            if (!localStorage["layout"])
+                return false;
+            var cacheLayout = JSON.parse(localStorage["layout"]);
+            var checkout = cacheLayout.checkout;
 
-        $('#bank-infos').html(infoStr);
-    }
-</script>
+            var bankInfos = checkout.bank_infos;
+            var infoStr = '';
+            for (var i = 0; i < bankInfos.length; i++)
+                infoStr += bankInfos[i] + '<br/>';
+
+            $('#bank-infos').html(infoStr);
+
+            var shipTimes = checkout.ship_times;
+            var selectTime = $('select[name=ship_time]');
+            for (var i = 0; i < shipTimes.length; i++) {
+                selectTime.append(
+                    $('<option value="' + shipTimes[i] + '">').append(shipTimes[i])
+                );
+            }
+
+            var sDays = checkout.spacing_days;
+            $('#spacing-days').text(sDays);
+            var inpShipDate = $('[name=ship_date]')
+            inpShipDate.focus(() => {
+                if (!$('[name=ship_date]').attr('min'))
+                    $('[name=ship_date]').attr('min', minNormalDate);
+            });
+            inpShipDate.val(getMinNormalDate(sDays));
+
+            return true;
+        }
+    </script>
+}
+
+@{
+    var minFastDate = Helper.ToVNDateTime(DateTime.UtcNow).Value;
 }
 
 @section script{
 
-<script>
+    <script>
     var productDetails = {};
     pageInit();
 
+
+    var minFastDate = '@minFastDate.Year-@minFastDate.Month.D()-@minFastDate.Day.D()';
+    var minNormalDate;
+
+    function getMinNormalDate(sDays) {
+        var arr = minFastDate.split('-');
+        var year = parseInt(arr[0]);
+        var month = parseInt(arr[1]);
+        var date = parseInt(arr[2]);
+        var newDate = new Date(year, month, date).addDays(sDays);
+
+        function d(n) {
+            if (n < 10)
+                return '0' + n;
+            return n.toString();
+        }
+        minNormalDate = (newDate.getYear() + 1900).toString() + '-' + d(newDate.getMonth()) + '-' + d(newDate.getDate());
+        return minNormalDate;
+    }
+
+
     function pageInit() {
         loadCartDetail();
+
+        $('#inp-ship-normal').change(() => changeInpShipType());
+        $('#inp-ship-fast').change(() => changeInpShipType());
+
+    }
+
+    function changeInpShipType() {
+        var val = $('[name=ship_type]:checked').val();
+        if (val == 'fast')
+            $('[name=ship_date]').attr('min', minFastDate);
+        else
+            $('[name=ship_date]').attr('min', minNormalDate);
+    }
+
+    function checkShipDate() {
+        var inp = $('[name=ship_date]');
+        var vals = inp.val().split('-');
+        var minVal = inp.attr('min');
+        var minVals = minVal.split('-');
+        if (parseInt(vals[0]) < parseInt(minVals[0])) {
+            inp.val(minVal);
+        } else if (parseInt(vals[1]) < parseInt(minVals[1])) {
+            inp.val(minVal);
+        } else if (parseInt(vals[2]) < parseInt(minVals[2])) {
+            inp.val(minVal);
+        }
     }
 
     function loadCartDetail() {
@@ -199,12 +335,17 @@
     function createOrder() {
         var order = {
             details: getCart().details,
-            customer: {
-                name: $('[name=customer_name]').val(),
-                phone: $('[name=customer_phone]').val(),
-                //email
-            },
-            ship_address: $('[name=ship_address]').val(),
+            customer_name: $('[name=customer_name]').val(),
+            customer_phone: $('[name=customer_phone]').val(),
+            customer_email: $('[name=customer_email]').val(),
+            customer_address: $('[name=customer_address]').val(),
+            receiver_name: $('[name=receiver_name]').val(),
+            receiver_phone: $('[name=receiver_phone]').val(),
+            receiver_address: $('[name=receiver_address]').val(),
+            ship_type: $('[name=ship_type]:checked').val(),
+            ship_date: $('[name=ship_date]').val(),
+            ship_time: $('[name=ship_time]').val(),
+            message: $('[name=message]').val(),
             note: $('[name=note]').val(),
             payment_type: $('[name=payment_type]:checked').val()
         };
@@ -245,6 +386,6 @@
 
     }
 
-</script>
+    </script>
 
 }

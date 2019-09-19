@@ -1,10 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace CSK.Data
 {
@@ -17,6 +22,12 @@ namespace CSK.Data
 
     public static class Helper
     {
+        public static DateTime? ToUTCDateTime(string str)
+        {
+            var arr = str.Split('-');
+            return new DateTime(int.Parse(arr[0]), int.Parse(arr[1]), int.Parse(arr[2])).ToUniversalTime();
+        }
+
         public static DateTime? ToVNDateTime(DateTime? rawTime)
         {
             if (rawTime == null)
@@ -24,13 +35,13 @@ namespace CSK.Data
             return TimeZoneInfo.ConvertTimeFromUtc(rawTime.Value,
                 TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
         }
-        public static string ToVNStyleDateString(DateTime? rawTime)
+        public static string ToVNStyleDateString(DateTime? rawTime, bool getTime = true)
         {
             if (rawTime == null)
                 return null;
             var vnTime = ToVNDateTime(rawTime).Value;
-            return vnTime.Day.D() + "/" + vnTime.Month.D() + "/" + vnTime.Year + " " + 
-                vnTime.Hour.D() + ":" + vnTime.Minute.D() + ":" + vnTime.Second.D();
+            return vnTime.Day.D() + "/" + vnTime.Month.D() + "/" + vnTime.Year + " " +
+                (getTime ? (vnTime.Hour.D() + ":" + vnTime.Minute.D() + ":" + vnTime.Second.D()) : "");
         }
 
         public static string D(this int num)
@@ -44,6 +55,8 @@ namespace CSK.Data
     public class App
     {
         public string DataPath { get; set; }
+        public string BaseAddress { get; set; }
+        public string[] OwnerMails { get; set; }
 
         private static App instance;
         public static App Instance
@@ -813,5 +826,35 @@ namespace CSK.Data
             }
         }
     }
+
+    public static class Gmail
+    {
+        static string smtpAddress = "smtp.gmail.com";
+        static int portNumber = 587;
+        static bool enableSSL = true;
+        static string emailFromAddress = "consaukho@gmail.com"; //Sender Email Address  
+        static string password = "consaukho123"; //Sender Password  
+
+        public static async Task SendEmail(string subject, string body,
+            string[] to)
+        {
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(emailFromAddress);
+                foreach (var m in to)
+                    mail.To.Add(m);
+                mail.Subject = subject;
+                mail.Body = body;
+                mail.IsBodyHtml = true;
+                using (SmtpClient smtp = new SmtpClient(smtpAddress, portNumber))
+                {
+                    smtp.Credentials = new NetworkCredential(emailFromAddress, password);
+                    smtp.EnableSsl = enableSSL;
+                    await smtp.SendMailAsync(mail);
+                }
+            }
+        }
+    }
+
 
 }

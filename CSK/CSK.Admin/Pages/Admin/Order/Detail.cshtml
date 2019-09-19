@@ -54,6 +54,23 @@
                                 <div><b>Tên</b>: <span id="customer-name"><!--dynamic--></span></div>
                                 <div><b>Điện thoại</b>: <span id="customer-phone"><!--dynamic--></span></div>
                                 <div><b>Email</b>: <span id="customer-email"><!--dynamic--></span></div>
+                                <div><b>Đại chỉ</b>: <span id="customer-address"><!--dynamic--></span></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Thông tin người nhận:</label>
+                            <div style="padding-left:50px;">
+                                <div><b>Tên</b>: <span id="receiver-name"><!--dynamic--></span></div>
+                                <div><b>Điện thoại</b>: <span id="receiver-phone"><!--dynamic--></span></div>
+                                <div><b>Đại chỉ</b>: <span id="receiver-address"><!--dynamic--></span></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Thông tin giao hàng:</label>
+                            <div style="padding-left:50px;">
+                                <div><b>Giao hàng</b>: <span id="ship-type"><!--dynamic--></span></div>
+                                <div><b>Ngày giao yêu cầu</b>: <span id="ship-date"><!--dynamic--></span></div>
+                                <div><b>Khung giờ</b>: <span id="ship-time"><!--dynamic--></span></div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -62,12 +79,13 @@
                                 <div><b>Tổng ban đầu</b>: <span id="total-amount"><!--dynamic--></span> (VND)</div>
                                 <div><b>Tổng cuối cùng</b>: <span id="final-amount"><!--dynamic--></span> (VND)</div>
                                 <div><b>Phương thức thanh toán</b>: <span id="payment-type"><!--dynamic--></span></div>
-                                <div><b>Địa chỉ giao hàng</b>: <span id="ship-address"><!--dynamic--></span></div>
                                 <div><b>Tình trạng</b>: <span id="status"><!--dynamic--></span></div>
+                                <div><b>Lời nhắn</b></div>
+                                <textarea name="message" id="message" class="form-control" disabled style="width:50%;height:100px;"></textarea>
                                 <div><b>Ghi chú</b></div>
                                 <textarea name="note" id="note" class="form-control" disabled style="width:50%;height:100px;"></textarea>
                             </div>
-                            <br/>
+                            <br />
                             <div style="padding: 0 40px;">
 
                                 <table id="tbl-details" class="table table-hover">
@@ -79,7 +97,7 @@
                                     </tr>
 
                                 </table>
-                                
+
                             </div>
                         </div>
                         <div class="form-group">
@@ -124,9 +142,9 @@
                 ).append(
                     $('<td><a href="/admin/product/' + d.product_id + '/" target="blank">' + d.product_name + '</a></td>')
                 ).append(
-                    $('<td>' + d.total_amount + '</td>')
+                    $('<td>' + toMoneyFormat(d.total_amount.toString()) + '</td>')
                 ).append(
-                    $('<td>' + d.final_amount + '</td>')
+                    $('<td>' + toMoneyFormat(d.final_amount.toString()) + '</td>')
                 )
             );
         }
@@ -166,13 +184,22 @@
                 console.log(data);
 
                 $('#order-id').text(data.id);
-                $('#customer-name').text(data.customer.name);
-                $('#customer-phone').text(data.customer.phone);
-                $('#customer-email').text(data.customer.email);
+                $('#customer-name').text(data.customer_name);
+                $('#customer-phone').text(data.customer_phone);
+                $('#customer-email').text(data.customer_email);
+                $('#customer-address').text(data.customer_address);
+                $('#receiver-name').text(data.receiver_name);
+                $('#receiver-phone').text(data.receiver_phone);
+                $('#receiver-address').text(data.receiver_address);
+                $('#ship-type').text(data.ship_type == 'normal' ? 'Bình thường' : 'Gấp');
+                if (data.ship_type == 'fast')
+                    $('#ship-type').attr('style', 'color:red');
+                $('#ship-date').text(data.ship_date);
+                $('#ship-time').text(data.ship_time);
                 $('#total-amount').text(toMoneyFormat(data.total_amount.toString()));
                 $('#final-amount').text(toMoneyFormat(data.final_amount.toString()));
                 $('#payment-type').text(toPaymentTypeText(data.payment_type));
-                $('#ship-address').text(data.ship_address);
+                $('#message').text(data.message);
                 $('#note').text(data.note);
                 setStatus(data.status);
 

@@ -11,30 +11,37 @@
 
     .product-img-container {
         position: relative;
+        overflow: hidden;
     }
+
+        .product-img-container img {
+            width: 100%;
+            transition: 0.5s;
+            margin-bottom: 10px;
+        }
 
     .btn-detail {
         opacity: 0;
-        background: rgba(255,255,255,0.7);
-        width: 101%;
-        height: 101%;
+        background: rgba(0,0,0,0.7);
+        width: 110%;
+        /*height: 315px;*/
         text-align: center;
         position: absolute;
-        top: 50%;
+        top: 47%;
         left: 50%;
         transform: translate(-50%, -50%);
     }
 
-        .btn-detail span {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            display: inline-block;
-            transform: translate(-50%, -50%);
-            color: black;
-            font-size: 170%;
-        }
+    .btn-detail i {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        display: inline-block;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 170%;
+    }
 
     .custom-price {
         color: #ee4266;
@@ -44,25 +51,9 @@
             color: gray;
         }
 
-    #lo-banner, #lo-banner-bottom {
+    .product-item {
         transition: 0.5s;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-
-    .product-item{
-        transition: 0.5s;
-        background-size: 100% 100%!important;
-    }
-
-        #lo-banner:hover, #lo-banner-bottom:hover {
-            cursor: pointer;
-            filter: saturate(150%);
-        }
-
-    .product-category {
-        width: 200px;
+        background-size: 100% 100% !important;
     }
 
     .discount {
@@ -74,57 +65,57 @@
 
     .custom-product {
         overflow: hidden;
-        padding-top: 15px;
-        padding-bottom: 15px;
         transition: 0.5s;
         font-size: 130%;
         font-weight: normal;
     }
 
-        .custom-product img {
-            height: 320px;
-            width: 100%;
-        }
-
         .custom-product a {
             font-size: 130%;
         }
 
-        .custom-product img {
-            margin-bottom: 10px;
-            transition: 0.5s;
+        .custom-product:hover .btn-detail {
+            opacity: 1;
         }
 
-        /*.custom-product:hover .btn-detail {
-            opacity: 1;
-        }*/
-        .custom-product:hover {
-            box-shadow: 0 0 20px gray;
+        .custom-product:hover img {
+            filter: brightness(0.4);
         }
+
+        
+    .lo-banner:hover, .lo-banner-bottom:hover {
+        cursor: pointer;
+        filter: saturate(150%);
+    }
+
+    .lo-banner, .lo-banner-bottom {
+        transition: background 1s, filter 0.5s !important;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 650px !important;
+    }
+
+    .product-category {
+        width: 200px;
+    }
 
     #popular-products img {
         margin-bottom: 10px;
     }
+
+    #lo-most-rated {
+        padding-bottom: 80px;
+    }
 </style>
 }
 
-<div id="lo-banner" class="site-blocks-cover" data-aos="fade">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 ml-auto order-md-2 align-self-start">
-                <div class="site-block-cover-content">
-                    <h2 class="sub-title" id="lo-banner-text-1">#New Summer Collection 2019</h2>
-                    <h1 id="lo-banner-text-2">Arrivals Sales</h1>
-                    <p><a href="#" id="lo-banner-link-3" class="btn btn-black rounded-0">Shop Now</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="banner-slider" class="owl-carousel">
 </div>
 
 <div id="lo-categories" class="site-section">
     <div class="container">
-        <div class="title-section mb-5">
+        <div class="title-section mb-3">
             <h2 class="text-uppercase" id="lo-categories-title"><span class="d-block">Discover</span> The Collections</h2>
         </div>
         <div class="row align-items-stretch">
@@ -149,7 +140,7 @@
 <div id="lo-products" class="site-section">
     <div class="container">
         <div class="row">
-            <div class="title-section mb-5 col-12">
+            <div class="title-section mb-3 col-12">
                 <h2 class="text-uppercase" id="lo-products-title">Sản phẩm phổ biến</h2>
             </div>
         </div>
@@ -163,7 +154,7 @@
 <div id="lo-most-rated" class="site-section">
     <div class="container">
         <div class="row">
-            <div class="title-section text-center mb-5 col-12">
+            <div class="title-section text-center mb-3 col-12">
                 <h2 id="lo-most-rated-title" class="text-uppercase">Most Rated</h2>
             </div>
         </div>
@@ -177,20 +168,10 @@
     </div>
 </div>
 
+<div id="banner-slider-bottom" class="owl-carousel">
 
-<div id="lo-banner-bottom" class="site-blocks-cover inner-page py-5" data-aos="fade">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 ml-auto order-md-2 align-self-start">
-                <div class="site-block-cover-content">
-                    <h2 id="lo-banner-bottom-text-1" class="sub-title">#New Summer Collection 2019</h2>
-                    <h1 id="lo-banner-bottom-text-2">New Shoes</h1>
-                    <p><a href="#" id="lo-banner-bottom-link-3" class="btn btn-black rounded-0">Shop Now</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
+
 
 @section script_layout{
 <script>
@@ -201,38 +182,31 @@
         if (!localStorage["layout"])
             return false;
         var cacheLayout = JSON.parse(localStorage["layout"]);
+        var home = cacheLayout.home;
 
         try {
-            var banner = cacheLayout.banner;
-            if (!banner.visible) {
-                $('#lo-banner').remove();
-            } else {
-                if (banner.text_1.visible) {
-                    $('#lo-banner-text-1').text(banner.text_1.value);
-                } else {
-                    $('#lo-banner-text-1').remove();
-                }
-                if (banner.text_2.visible) {
-                    $('#lo-banner-text-2').text(banner.text_2.value);
-                } else {
-                    $('#lo-banner-text-2').remove();
-                }
-                if (banner.link_3.visible) {
-                    $('#lo-banner-link-3').text(banner.link_3.value);
-                    $('#lo-banner-link-3').attr('href', banner.link_3.link);
-                    //$('#lo-banner').click(() => location.href = banner.link_3.link);
-                } else {
-                    $('#lo-banner-link-3').remove();
-                }
-                if (banner.img) {
-                    $('#lo-banner').attr("style", "background-image:url('" + banner.img + "')");
-                }
-
+            var banner = home.banner;
+            var images = banner.images;
+            for (var i = 0; i < images.length; i++) {
+                $('#banner-slider').append(
+                    $('<a href="' + images[i].link + '">').append(
+                        $('<div class="lo-banner-bottom site-blocks-cover inner-page py-5" data-aos="fade" style="background-image:url(\'' + images[i].img + '\')">')
+                    )
+                );
             }
+            $('#banner-slider').owlCarousel({
+                center: false,
+                items: 1,
+                loop: true,
+                stagePadding: 0,
+                margin: 0,
+                smartSpeed: 1000,
+                autoplay: banner.autoplay,
+            });
         } catch (e) { }
 
         try {
-            var categories = cacheLayout.categories;
+            var categories = home.categories;
             if (!categories.visible) {
                 $('#lo-categories').remove();
             } else {
@@ -266,36 +240,29 @@
         } catch (e) { }
 
         try {
-            var bannerBottom = cacheLayout.banner_bottom;
-            if (!bannerBottom.visible) {
-                $('#lo-banner-bottom').remove();
-            } else {
-                if (bannerBottom.text_1.visible) {
-                    $('#lo-banner-bottom-text-1').text(bannerBottom.text_1.value);
-                } else {
-                    $('#lo-banner-bottom-text-1').remove();
-                }
-                if (bannerBottom.text_2.visible) {
-                    $('#lo-banner-bottom-text-2').text(bannerBottom.text_2.value);
-                } else {
-                    $('#lo-banner-bottom-text-2').remove();
-                }
-                if (bannerBottom.link_3.visible) {
-                    $('#lo-banner-bottom-link-3').text(bannerBottom.link_3.value);
-                    $('#lo-banner-bottom-link-3').attr('href', bannerBottom.link_3.link);
-                    //$('#lo-banner-bottom').click(() => location.href = bannerBottom.link_3.link);
-                } else {
-                    $('#lo-banner-bottom-link-3').remove();
-                }
-
-                if (bannerBottom.img) {
-                    $('#lo-banner-bottom').attr("style", "background-image:url('" + bannerBottom.img + "')");
-                }
+            var bannerBot = home.banner_bottom;
+            var images = bannerBot.images;
+            for (var i = 0; i < images.length; i++) {
+                $('#banner-slider-bottom').append(
+                    $('<a href="' + images[i].link + '">').append(
+                        $('<div class="lo-banner-bottom site-blocks-cover inner-page py-5" data-aos="fade" style="background-image:url(\'' + images[i].img + '\')">')
+                    )
+                );
             }
+
+            $('#banner-slider-bottom').owlCarousel({
+                center: false,
+                items: 1,
+                loop: true,
+                stagePadding: 0,
+                margin: 0,
+                smartSpeed: 1000,
+                autoplay: bannerBot.autoplay,
+            });
         } catch (e) { }
 
         try {
-            var products = cacheLayout.products;
+            var products = home.products;
             if (!products.visible) {
                 $('#lo-products').remove();
             } else {
@@ -309,7 +276,7 @@
         } catch (e) { }
 
         try {
-            var mostRateds = cacheLayout.most_rated;
+            var mostRateds = home.most_rated;
             if (!mostRateds.visible) {
                 $('#lo-most-rated').remove();
             } else {
@@ -352,12 +319,12 @@
 
             if (section.indexOf('popular') > -1) {
                 $('#' + section).append(
-                    $('<div class="custom-product col-lg-4 col-md-6 item-entry mb-4">').append(
+                    $('<div class="custom-product col-lg-3 col-md-4 item-entry mb-4">').append(
                         $('<div class="product-img-container">').append(
                             $('<a href="/detail/' + data[i].id + '" class="d-block">').append(
                                 $('<img src="' + (data[i].image_urls ? data[i].image_urls[0] : '') + '" alt="Image" class="img-fluid">')
                             )
-                        ).append('<a href="/detail/' + data[i].id + '" class="btn-detail"><span>XEM</span></a>')
+                        ).append('<a href="/detail/' + data[i].id + '" class="btn-detail"><i class="fa fa-search"></i></a>')
                     ).append(
                         $('<h2 class="item-title">').append(
                             $('<a href="/detail/' + data[i].id + '">').append(data[i].name)
@@ -374,7 +341,7 @@
                                 $('<a href="/detail/' + data[i].id + '" class="d-block">').append(
                                     $('<img src="' + (data[i].image_urls ? data[i].image_urls[0] : '') + '" alt="Image" class="img-fluid">')
                                 )
-                            ).append('<a href="/detail/' + data[i].id + '" class="btn-detail"><span>XEM</span></a>')
+                            ).append('<a href="/detail/' + data[i].id + '" class="btn-detail"><i class="fa fa-search"></i></a>')
                         ).append(
                             $('<h2 class="item-title">').append(
                                 $('<a href="/detail/' + data[i].id + '">').append(data[i].name)
@@ -427,7 +394,9 @@
     pageInit();
 
     function pageInit() {
+
     }
 
 </script>
+
 }
