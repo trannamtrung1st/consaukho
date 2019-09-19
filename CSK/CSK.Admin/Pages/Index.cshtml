@@ -97,7 +97,7 @@
     }
 
     .product-category {
-        width: 200px;
+        width: 300px;
     }
 
     #popular-products img {
@@ -120,16 +120,16 @@
         </div>
         <div class="row align-items-stretch">
             <div class="col-lg-8">
-                <div class="product-item sm-height full-height bg-gray" id="lo-categories-cate-1-img">
+                <div class="product-item sm-height full-height " id="lo-categories-cate-1-img">
                     <a href="#" id="lo-categories-cate-1-link" class="product-category">Women <span>25 items</span></a>
                 </div>
             </div>
             <div class="col-lg-4">
-                <div class="product-item sm-height bg-gray mb-4" id="lo-categories-cate-2-img">
+                <div class="product-item sm-height mb-4" id="lo-categories-cate-2-img">
                     <a href="#" id="lo-categories-cate-2-link" class="product-category">Men <span>25 items</span></a>
                 </div>
 
-                <div class="product-item sm-height bg-gray" id="lo-categories-cate-3-img">
+                <div class="product-item sm-height " id="lo-categories-cate-3-img">
                     <a href="#" id="lo-categories-cate-3-link" class="product-category">Shoes <span>25 items</span></a>
                 </div>
             </div>
@@ -222,19 +222,19 @@
                     var cate = categories.cate1;
                     if (cate.id)
                         loadCate(cate.id, 1);
-                    else if (cate.image_url) addCate(cate, 1);
+                    else addCate(cate, 1);
                 }
                 if (categories.cate2) {
                     var cate = categories.cate2;
                     if (cate.id)
                         loadCate(cate.id, 2);
-                    else if (cate.image_url) addCate(cate, 2);
+                    else addCate(cate, 2);
                 }
                 if (categories.cate3) {
                     var cate = categories.cate3;
                     if (cate.id)
                         loadCate(cate.id, 3);
-                    else if (cate.image_url) addCate(cate, 3);
+                    else addCate(cate, 3);
                 }
             }
         } catch (e) { }
@@ -372,11 +372,15 @@
     }
 
     function addCate(cate, no) {
-        $('#lo-categories-cate-' + no + '-link').html(cate.name + ' <span>' + cate.pcount + ' sản phẩm</span>');
+        if (cate.name)
+            $('#lo-categories-cate-' + no + '-link').html(cate.name + (cate.pcount ? (' <span>' + cate.pcount + ' sản phẩm</span>') : ''));
+
         if (cate.id)
             $('#lo-categories-cate-' + no + '-link').attr('href', '/products?cate_id=' + cate.id);
-        else
+        else if (cate.link)
             $('#lo-categories-cate-' + no + '-link').attr('href', cate.link);
+        else 
+            $('#lo-categories-cate-' + no + '-link').remove();
 
         $('#lo-categories-cate-' + no + '-img').attr('style', "background-image:url('" + cate.image_url + "');");
     }
