@@ -94,8 +94,9 @@
     }
 
     .discount {
+        font-size: 97%;
         background-color: orange;
-        border-radius: 20px;
+        border-radius: 10px;
         padding: 2px 10px;
         color: black;
     }
@@ -103,12 +104,12 @@
     .custom-product {
         overflow: hidden;
         transition: 0.5s;
-        font-size: 130%;
+        font-size: 110%;
         font-weight: normal;
     }
 
         .custom-product a {
-            font-size: 130%;
+            font-size: 110%;
         }
 
         .custom-product:hover .btn-detail {
@@ -312,7 +313,7 @@
             }
 
             $('#related-products').append(
-                $('<div class="custom-product item-entry">').append(
+                $('<div class="custom-product item-entry" style="padding: 0 15px;">').append(
                     $('<div class="product-img-container">').append(
                         $('<a href="/detail/' + data[i].id + '" class="d-block">').append(
                             $('<img src="' + (data[i].image_urls ? data[i].image_urls[0] : '') + '" alt="Image" class="img-fluid">')

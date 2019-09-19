@@ -5,6 +5,23 @@
 
 @section style{
 <style>
+    @@media (max-width: 991.98px) {
+        .site-blocks-cover {
+            height: 400px !important;
+        }
+    }
+    @@media (max-width: 700px) {
+        .site-blocks-cover {
+            height: 300px !important;
+        }
+    }
+    @@media (max-width: 500px) {
+        .site-blocks-cover {
+            height: 250px !important;
+        }
+    }
+
+
     .item-title a {
         color: black !important;
     }
@@ -32,16 +49,16 @@
         transform: translate(-50%, -50%);
     }
 
-    .btn-detail i {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 100%;
-        display: inline-block;
-        transform: translate(-50%, -50%);
-        color: white;
-        font-size: 170%;
-    }
+        .btn-detail i {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            display: inline-block;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 170%;
+        }
 
     .custom-price {
         color: #ee4266;
@@ -53,12 +70,15 @@
 
     .product-item {
         transition: 0.5s;
-        background-size: 100% 100% !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
     }
 
     .discount {
+        font-size: 97%;
         background-color: orange;
-        border-radius: 20px;
+        border-radius: 10px;
         padding: 2px 10px;
         color: black;
     }
@@ -66,12 +86,12 @@
     .custom-product {
         overflow: hidden;
         transition: 0.5s;
-        font-size: 130%;
+        font-size: 110%;
         font-weight: normal;
     }
 
         .custom-product a {
-            font-size: 130%;
+            font-size: 110%;
         }
 
         .custom-product:hover .btn-detail {
@@ -82,7 +102,7 @@
             filter: brightness(0.4);
         }
 
-        
+
     .lo-banner:hover, .lo-banner-bottom:hover {
         cursor: pointer;
         filter: saturate(150%);
@@ -90,10 +110,10 @@
 
     .lo-banner, .lo-banner-bottom {
         transition: background 1s, filter 0.5s !important;
-        background-size: cover;
+        background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
-        height: 650px !important;
+        height: 650px;
     }
 
     .product-category {
@@ -379,7 +399,7 @@
             $('#lo-categories-cate-' + no + '-link').attr('href', '/products?cate_id=' + cate.id);
         else if (cate.link)
             $('#lo-categories-cate-' + no + '-link').attr('href', cate.link);
-        else 
+        else
             $('#lo-categories-cate-' + no + '-link').remove();
 
         $('#lo-categories-cate-' + no + '-img').attr('style', "background-image:url('" + cate.image_url + "');");
