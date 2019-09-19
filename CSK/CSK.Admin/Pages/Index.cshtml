@@ -10,11 +10,13 @@
             height: 400px !important;
         }
     }
+
     @@media (max-width: 700px) {
         .site-blocks-cover {
             height: 300px !important;
         }
     }
+
     @@media (max-width: 500px) {
         .site-blocks-cover {
             height: 250px !important;
@@ -102,13 +104,12 @@
             filter: brightness(0.4);
         }
 
-
-    .lo-banner:hover, .lo-banner-bottom:hover {
+    .lo-banner:hover {
         cursor: pointer;
         filter: saturate(150%);
     }
 
-    .lo-banner, .lo-banner-bottom {
+    .lo-banner {
         transition: background 1s, filter 0.5s !important;
         background-size: contain;
         background-position: center;
@@ -130,7 +131,7 @@
 </style>
 }
 
-<div id="banner-slider" class="owl-carousel">
+<div id="banner-slider" class="owl-carousel home-banner">
 </div>
 
 <div id="lo-categories" class="site-section">
@@ -170,7 +171,6 @@
     </div>
 </div>
 
-
 <div id="lo-most-rated" class="site-section">
     <div class="container">
         <div class="row">
@@ -188,8 +188,7 @@
     </div>
 </div>
 
-<div id="banner-slider-bottom" class="owl-carousel">
-
+<div id="banner-slider-bottom" class="owl-carousel home-banner">
 </div>
 
 
@@ -210,20 +209,34 @@
             for (var i = 0; i < images.length; i++) {
                 $('#banner-slider').append(
                     $('<a href="' + images[i].link + '">').append(
-                        $('<div class="lo-banner-bottom site-blocks-cover inner-page py-5" data-aos="fade" style="background-image:url(\'' + images[i].img + '\')">')
+                        $('<div class="lo-banner site-blocks-cover inner-page py-5" data-aos="fade" style="background-image:url(\'' + images[i].img + '\')">')
                     )
                 );
             }
-            $('#banner-slider').owlCarousel({
-                center: false,
-                items: 1,
-                loop: true,
-                stagePadding: 0,
-                margin: 0,
-                smartSpeed: 1000,
-                autoplay: banner.autoplay,
-            });
         } catch (e) { }
+
+        try {
+            var bannerBot = home.banner_bottom;
+            var images = bannerBot.images;
+            for (var i = 0; i < images.length; i++) {
+                $('#banner-slider-bottom').append(
+                    $('<a href="' + images[i].link + '">').append(
+                        $('<div class="lo-banner site-blocks-cover inner-page py-5" data-aos="fade" style="background-image:url(\'' + images[i].img + '\')">')
+                    )
+                );
+            }
+
+        } catch (e) { }
+
+        $('.home-banner').owlCarousel({
+            center: false,
+            items: 1,
+            loop: true,
+            stagePadding: 0,
+            margin: 0,
+            smartSpeed: 1000,
+            autoplay: banner.autoplay,
+        });
 
         try {
             var categories = home.categories;
@@ -257,28 +270,6 @@
                     else addCate(cate, 3);
                 }
             }
-        } catch (e) { }
-
-        try {
-            var bannerBot = home.banner_bottom;
-            var images = bannerBot.images;
-            for (var i = 0; i < images.length; i++) {
-                $('#banner-slider-bottom').append(
-                    $('<a href="' + images[i].link + '">').append(
-                        $('<div class="lo-banner-bottom site-blocks-cover inner-page py-5" data-aos="fade" style="background-image:url(\'' + images[i].img + '\')">')
-                    )
-                );
-            }
-
-            $('#banner-slider-bottom').owlCarousel({
-                center: false,
-                items: 1,
-                loop: true,
-                stagePadding: 0,
-                margin: 0,
-                smartSpeed: 1000,
-                autoplay: bannerBot.autoplay,
-            });
         } catch (e) { }
 
         try {

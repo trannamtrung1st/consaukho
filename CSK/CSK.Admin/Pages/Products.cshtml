@@ -111,43 +111,8 @@
 <div class="site-section">
     <div class="container">
 
-        <div class="row mb-5">
-            <div class="col-md-9 order-1">
-
-                <div class="row align">
-                    <div class="col-md-12 mb-5">
-                        <div class="float-md-left"><h2 class="text-black h5">Sản phẩm</h2></div>
-                        <div class="d-flex">
-                            <div class="dropdown mr-1 ml-md-auto">
-                            </div>
-                            <div class="btn-group">
-                                <h5 style="color:black!important">Sắp xếp</h5>&nbsp;&nbsp;&nbsp;
-                                <select name="sorts" onchange="loadProducts()">
-                                    <option value="aprice">Giá từ thấp đến cao</option>
-                                    <option value="dprice">Giá từ cao đến thấp</option>
-                                    <option value="aname">Tên từ A đến Z</option>
-                                    <option value="dname">Tên từ Z đến A</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row mb-5" id="products-container">
-                    <!--dynamic-->
-                </div>
-                <div class="row">
-                    <div class="col-md-12 text-center">
-                        <div class="site-block-27">
-                            <ul id="page-container">
-                                <!--dynamic-->
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 order-2 mb-5 mb-md-0">
+        <div class="row">
+            <div class="col-md-3 order-1" style="margin-bottom: 60px">
                 <div class="border p-4 rounded mb-4">
                     <h3 class="mb-3 h6 text-uppercase text-black d-block">Danh mục</h3>
                     <ul class="list-unstyled mb-0" id="categories">
@@ -168,6 +133,42 @@
                     <button style="width:100%" class="btn btn-primary" onclick="loadProducts()">Lọc</button>
                 </div>
             </div>
+
+            <div class="col-md-9 order-2 mb-5 mb-md-0">
+
+                <div class="row align">
+                    <div class="col-md-12 mb-5">
+                        <div class="float-md-left"><h2 class="text-black h5">Sản phẩm</h2></div>
+                        <div class="d-flex">
+                            <div class="dropdown mr-1 ml-md-auto">
+                            </div>
+                            <div class="btn-group">
+                                <h5 style="color:black!important">Sắp xếp</h5>&nbsp;&nbsp;&nbsp;
+                                <select name="sorts" onchange="loadProducts()">
+                                    <option value="aprice">Giá từ thấp đến cao</option>
+                                    <option value="dprice">Giá từ cao đến thấp</option>
+                                    <option value="aname">Tên từ A đến Z</option>
+                                    <option value="dname">Tên từ Z đến A</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="products-container">
+                    <!--dynamic-->
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <div class="site-block-27">
+                            <ul id="page-container">
+                                <!--dynamic-->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>

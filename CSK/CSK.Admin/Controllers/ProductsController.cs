@@ -165,6 +165,9 @@ namespace CSK.Admin.Controllers
                 if (limit > 0)
                     query = query.Skip(page * limit).Take(limit);
                 if (sorts != null)
+                {
+                    if (sorts.Length == 0)
+                        sorts = new string[] { "ddate" };
                     foreach (var s in sorts)
                     {
                         var isAsc = s[0] == 'a';
@@ -179,12 +182,22 @@ namespace CSK.Admin.Controllers
                                 break;
                             case "price":
                                 if (isAsc)
-                                    query = query.OrderBy(p => p.UnitPrice);
+                                    query = query.OrderBy(p =>
+                                    p.UnitPrice - (p.DiscountAmount ?? 0) - (p.DiscountPercent != null ? p.DiscountPercent * p.UnitPrice / 100 : 0));
                                 else
-                                    query = query.OrderByDescending(p => p.UnitPrice);
+                                    query = query.OrderByDescending(p =>
+                                    p.UnitPrice - (p.DiscountAmount ?? 0) - (p.DiscountPercent != null ? p.DiscountPercent * p.UnitPrice / 100 : 0));
+                                break;
+                            case "date":
+
+                                if (isAsc)
+                                    query = query.OrderBy(p => p.CreatedDate);
+                                else
+                                    query = query.OrderByDescending(p => p.CreatedDate);
                                 break;
                         }
                     }
+                }
                 if (cate_id != null)
                     query = query.Where(p => p.CategoriesOfProducts.Any(cp => cp.CategoryId == cate_id));
                 if (from_price != null)
@@ -196,7 +209,6 @@ namespace CSK.Admin.Controllers
                     query = query.Where(p => p.Name.Contains(search) ||
                         p.CategoriesOfProducts.Any(pC => pC.Category.Name.Contains(search)));
                 }
-                query = query.OrderByDescending(p => p.CreatedDate);
 
                 var pros = query.ToList();
                 if (fields == null || fields.Length == 0)
