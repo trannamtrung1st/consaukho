@@ -1,4 +1,5 @@
 ﻿@page
+@using CSK.Data;
 @model IndexModel
 @{
 
@@ -12,9 +13,357 @@
     </h1>
 </section>
 
+@{
+    var curDate = DateTime.Now.ToJavaScriptDateStr();
+}
+
 <!-- Main content -->
 <section class="content">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Báo cáo tổng quan</h3>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form role="form">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label>Từ đầu ngày</label>
+                            <input type="date" name="from_date"
+                                   class="form-control" value="@curDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Đến hết ngày</label>
+                            <input type="date" name="to_date"
+                                   class="form-control" value="@curDate">
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
 
+                    <div class="box-footer">
+                        <button type="button" class="btn btn-primary" id="btn-run">Chạy báo cáo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="result" @*style="display: none;"*@>
+        <div class="col-md-6">
+            <div class="box box-success">
+                <div class="box-body">
+                    <div class="form-group">
+                        <label>Tổng số đơn hàng</label>:
+                        <span id="all-order-count"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Tổng doanh thu ban đầu</label>:
+                        <span id="total-amount"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Tổng doanh thu cuối cùng</label>:
+                        <span id="final-amount"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+
+            <!-- DONUT CHART -->
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Cơ cấu đơn hàng</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <canvas id="pieChart" style="height:250px"></canvas>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+
+        </div>
+        <!-- /.col (LEFT) -->
+        <div class="col-md-12">
+
+            <!-- BAR CHART -->
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Top 10 sản phẩm bán chạy <b>(đơn vị: hóa đơn)</b></h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="chart">
+                        <canvas id="most-sale-chart" style="height:230px"></canvas>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+
+        </div>
+        <!-- /.col (RIGHT) -->
+        <div class="col-md-12">
+
+            <!-- BAR CHART -->
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Top 10 sản phẩm đạt doanh thu cao <b>(đơn vị: VND)</b></h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="chart">
+                        <canvas id="most-revenue-chart" style="height:230px"></canvas>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+
+        </div>
+    </div>
+    <!-- /.row -->
 
 </section>
 <!-- /.content -->
+@section script{
+    <!-- ChartJS -->
+    <script src="/admin/bower_components/chart.js/Chart.js"></script>
+
+    <script>
+        pageInit();
+        function pageInit() {
+            $('#btn-run').click(runReport);
+        }
+
+        function runReport() {
+            $('#result').hide();
+
+            var fromDate = $('[name=from_date]').val();
+            var toDate = $('[name=to_date]').val();
+
+            $.ajax({
+                url: '/api/sale-orders/report?from_date=' + fromDate + '&to_date=' + toDate,
+                type: 'get',
+                success: (data) => {
+                    console.log(data);
+                    $('#result').show();
+
+                    loadChart(data);
+                },
+                error: (data) => {
+                    console.log(data);
+                    data = data.responseJSON;
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Message',
+                        text: data.message || 'Có lỗi xảy ra',
+                    });
+                }
+            });
+        }
+
+    </script>
+
+    <script>
+        function loadChart(data) {
+
+            var mostSaleChartOptions = {
+                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+                scaleBeginAtZero: true,
+                //Boolean - Whether grid lines are shown across the chart
+                scaleShowGridLines: true,
+                //String - Colour of the grid lines
+                scaleGridLineColor: 'rgba(0,0,0,.05)',
+                //Number - Width of the grid lines
+                scaleGridLineWidth: 1,
+                //Boolean - Whether to show horizontal lines (except X axis)
+                scaleShowHorizontalLines: true,
+                //Boolean - Whether to show vertical lines (except Y axis)
+                scaleShowVerticalLines: true,
+                //Boolean - If there is a stroke on each bar
+                barShowStroke: true,
+                //Number - Pixel width of the bar stroke
+                barStrokeWidth: 2,
+                //Number - Spacing between each of the X value sets
+                barValueSpacing: 5,
+                //Number - Spacing between data sets within X values
+                barDatasetSpacing: 1,
+                //String - A legend template
+                legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
+                //Boolean - whether to make the chart responsive
+                responsive: true,
+                maintainAspectRatio: true
+            }
+
+            mostSaleChartOptions.datasetFill = false;
+            mostSaleChartOptions.scaleLabel = (a1) => a1.value;
+
+            //Most sale
+            var mostSale = data.product_report.top_10_most_sale;
+            var mostSaleLbls = [];
+            var mostSaleData = [];
+            for (var i = 0; i < mostSale.length; i++) {
+                mostSaleLbls.push(mostSale[i].product_name);
+                mostSaleData.push(mostSale[i].orders_count);
+            }
+             
+            var mostSaleChartData = {
+                labels: mostSaleLbls,
+                datasets: [
+                    {
+                        label: 'Số đơn hàng',
+                        fillColor: '#337ab7',
+                        strokeColor: 'rgba(210, 214, 222, 1)',
+                        pointColor: 'rgba(210, 214, 222, 1)',
+                        pointStrokeColor: '#c1c7d1',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(220,220,220,1)',
+                        data: mostSaleData
+                    },
+                ]
+            }
+
+            var mostSaleChartCanvas = $('#most-sale-chart').get(0).getContext('2d')
+            var mostSaleChart = new Chart(mostSaleChartCanvas)
+
+            mostSaleChart.Bar(mostSaleChartData, mostSaleChartOptions);
+
+            //Most revenue
+            var mostRevenueChartOptions = {
+                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+                scaleBeginAtZero: true,
+                //Boolean - Whether grid lines are shown across the chart
+                scaleShowGridLines: true,
+                //String - Colour of the grid lines
+                scaleGridLineColor: 'rgba(0,0,0,.05)',
+                //Number - Width of the grid lines
+                scaleGridLineWidth: 1,
+                //Boolean - Whether to show horizontal lines (except X axis)
+                scaleShowHorizontalLines: true,
+                //Boolean - Whether to show vertical lines (except Y axis)
+                scaleShowVerticalLines: true,
+                //Boolean - If there is a stroke on each bar
+                barShowStroke: true,
+                //Number - Pixel width of the bar stroke
+                barStrokeWidth: 2,
+                //Number - Spacing between each of the X value sets
+                barValueSpacing: 5,
+                //Number - Spacing between data sets within X values
+                barDatasetSpacing: 1,
+                //String - A legend template
+                legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
+                //Boolean - whether to make the chart responsive
+                responsive: true,
+                maintainAspectRatio: true
+            }
+
+            mostRevenueChartOptions.datasetFill = false;
+            mostRevenueChartOptions.scaleLabel = (a1) => toMoneyFormat(a1.value);
+            
+            var mostRevenue = data.product_report.top_10_most_revenue;
+            var mostRevenueLbls = [];
+            var mostRevenueData = [];
+            for (var i = 0; i < mostRevenue.length; i++) {
+                mostRevenueLbls.push(mostRevenue[i].product_name);
+                //mostRevenueData.push(toMoneyFormat(mostRevenue[i].final_amount.toString()));
+                mostRevenueData.push(mostRevenue[i].final_amount);
+            }
+
+            var mostRevenueChartData = {
+                labels: mostRevenueLbls,
+                datasets: [
+                    {
+                        label: 'Doanh thu',
+                        fillColor: '#14a33a',
+                        strokeColor: 'rgba(210, 214, 222, 1)',
+                        pointColor: 'rgba(210, 214, 222, 1)',
+                        pointStrokeColor: '#c1c7d1',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(220,220,220,1)',
+                        data: mostRevenueData
+                    },
+                ]
+            }
+
+            var mostRevenueChartCanvas = $('#most-revenue-chart').get(0).getContext('2d')
+            var mostRevenueChart = new Chart(mostRevenueChartCanvas)
+
+            mostRevenueChart.Bar(mostRevenueChartData, mostRevenueChartOptions)
+
+            //-------------
+            //- PIE CHART -
+            //-------------
+            // Get context with jQuery - using jQuery's .get() method.
+
+            var orderReport = data.order_report;
+            $('#all-order-count').text(orderReport.all_order_count);
+            $('#total-amount').text(toMoneyFormat(orderReport.total_amount.toString()) + ' (VND)');
+            $('#final-amount').text(toMoneyFormat(orderReport.final_amount.toString()) + ' (VND)');
+
+            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+            var pieChart = new Chart(pieChartCanvas)
+            var PieData = [
+                {
+                    value: orderReport.cancled_order_count,
+                    color: 'red',
+                    highlight: 'red',
+                    label: 'Hủy'
+                },
+                {
+                    value: orderReport.finished_order_count,
+                    color: 'green',
+                    highlight: 'green',
+                    label: 'Hoàn thành'
+                }
+            ]
+            var pieOptions = {
+                //Boolean - Whether we should show a stroke on each segment
+                segmentShowStroke: true,
+                //String - The colour of each segment stroke
+                segmentStrokeColor: '#fff',
+                //Number - The width of each segment stroke
+                segmentStrokeWidth: 2,
+                //Number - The percentage of the chart that we cut out of the middle
+                percentageInnerCutout: 50, // This is 0 for Pie charts
+                //Number - Amount of animation steps
+                animationSteps: 100,
+                //String - Animation easing effect
+                animationEasing: 'easeOutBounce',
+                //Boolean - Whether we animate the rotation of the Doughnut
+                animateRotate: true,
+                //Boolean - Whether we animate scaling the Doughnut from the centre
+                animateScale: false,
+                //Boolean - whether to make the chart responsive to window resizing
+                responsive: true,
+                // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+                maintainAspectRatio: true,
+                //String - A legend template
+                legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>'
+            }
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            pieChart.Doughnut(PieData, pieOptions)
+
+        }
+    </script>
+}

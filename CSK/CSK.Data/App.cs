@@ -22,6 +22,29 @@ namespace CSK.Data
 
     public static class Helper
     {
+        public static string ToJavaScriptDateStr(this DateTime time)
+        {
+            return time.Year + "-" + time.Month.D() + "-" + time.Day.D();
+        }
+
+        public static DateTime? ToStartOfDayUTC(this DateTime? rawTime)
+        {
+            if (rawTime == null)
+                return null;
+            var dt = rawTime.Value;
+            return new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0)
+                        .ToUniversalTime();
+        }
+
+        public static DateTime? ToEndOfDayUTC(this DateTime? rawTime)
+        {
+            if (rawTime == null)
+                return null;
+            var dt = rawTime.Value;
+            return new DateTime(dt.Year, dt.Month, dt.Day, 23, 59, 59)
+                        .ToUniversalTime();
+        }
+
         public static DateTime? ToUTCDateTime(string str)
         {
             var arr = str.Split('-');

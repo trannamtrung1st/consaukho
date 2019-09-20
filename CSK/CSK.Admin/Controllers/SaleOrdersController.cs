@@ -32,6 +32,122 @@ namespace CSK.Admin.Controllers
         {
         }
 
+        [HttpGet("report")]
+        public IActionResult Report([FromQuery]DateTime? from_date,
+            [FromQuery]DateTime? to_date)
+        {
+            try
+            {
+                from_date = from_date.ToStartOfDayUTC();
+                to_date = to_date.ToEndOfDayUTC();
+                if (from_date == null || to_date == null)
+                    return BadRequest(new
+                    {
+                        message = "Có lỗi xảy ra"
+                    });
+                var fromDate = from_date.Value;
+                var toDate = to_date.Value;
+
+                if (toDate.Subtract(fromDate).TotalDays > 31)
+                    return BadRequest(new
+                    {
+                        message = "Không được chạy báo cáo khoảng thời gian vượt quá 1 tháng"
+                    });
+                if (toDate < fromDate)
+                    return BadRequest(new
+                    {
+                        message = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc"
+                    });
+
+                #region Reports
+                var allOrder = _context.SaleOrders.Where(o =>
+                    o.OrderTime >= fromDate && o.OrderTime <= toDate).ToList();
+                var cancledOrder = allOrder.Where(o => o.Status == "Cancled").ToList();
+                var finishedOrder = allOrder.Where(o => o.Status == "Finished").ToList();
+
+                #region Orders 
+                //all order count
+                var allOrderCount = allOrder.Count;
+                //cancled count
+                var cancledCount = cancledOrder.Count;
+                //finished count
+                var finishedCount = finishedOrder.Count;
+                var orderReport = new
+                {
+                    all_order_count = allOrderCount,
+                    cancled_order_count = cancledCount,
+                    finished_order_count = finishedCount,
+                    total_amount = finishedOrder.Sum(o => o.SaleOrderDetails.Sum(oD => oD.TotalAmount)),
+                    final_amount = finishedOrder.Sum(o => o.SaleOrderDetails.Sum(oD => oD.FinalAmount)),
+                };
+                #endregion
+
+                #region Products 
+                var pMap = new Dictionary<string, Products>();
+                foreach (var o in finishedOrder)
+                {
+                    var detailProducts = o.SaleOrderDetails.Select(d => d.ProductId);
+                    foreach (var p in detailProducts)
+                        if (!pMap.ContainsKey(p))
+                        {
+                            var product = _context.Products.Find(p);
+                            pMap[p] = product;
+                        }
+
+                }
+                var top10MostSale = pMap.Values.OrderByDescending(p => p.SaleOrderDetails.Count)
+                    .Take(10).ToList();
+                var top10MostSaleResp = new List<object>();
+                foreach (var p in top10MostSale)
+                {
+                    top10MostSaleResp.Add(new
+                    {
+                        product_name = p.Name,
+                        product_code = p.Code,
+                        product_id = p.Id,
+                        orders_count = p.SaleOrderDetails.Count,
+                    });
+                }
+
+                var top10MostRevenue = pMap.Values.OrderByDescending(p => p.SaleOrderDetails.Sum(d => d.FinalAmount));
+                var top10MostRevenueResp = new List<object>();
+                foreach (var p in top10MostRevenue)
+                {
+                    top10MostRevenueResp.Add(new
+                    {
+                        product_name = p.Name,
+                        product_code = p.Code,
+                        product_id = p.Id,
+                        final_amount = p.SaleOrderDetails.Sum(d => d.FinalAmount)
+                    });
+                }
+
+                var productReport = new
+                {
+                    top_10_most_sale = top10MostSaleResp,
+                    top_10_most_revenue = top10MostRevenueResp,
+                };
+                #endregion
+
+                #endregion
+
+                return Ok(new
+                {
+                    order_report = orderReport,
+                    product_report = productReport
+                });
+
+            }
+            catch (Exception e)
+            {
+                return Error(new
+                {
+                    message = "Có lỗi xảy ra. Vui lòng thử lại.",
+                    data = e,
+                });
+            }
+        }
+
         private object ToOrderResponse(SaleOrders order)
         {
             return new
@@ -145,11 +261,29 @@ namespace CSK.Admin.Controllers
         [HttpGet("")]
         public IActionResult Get([FromQuery]string[] fields,
             [FromQuery]string[] sorts,
+            [FromQuery]DateTime? from_date, [FromQuery]DateTime? to_date,
             [FromQuery]int page = 1, [FromQuery]int limit = 50)
         {
             try
             {
                 var ordQuery = _context.SaleOrders.AsQueryable();
+
+                if (from_date > to_date)
+                    return BadRequest(new
+                    {
+                        message = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc"
+                    });
+                if (from_date != null)
+                {
+                    var fromDate = from_date.ToStartOfDayUTC();
+                    ordQuery = ordQuery.Where(o => o.OrderTime >= fromDate);
+                }
+                if (to_date != null)
+                {
+                    var toDate = to_date.ToEndOfDayUTC();
+                    ordQuery = ordQuery.Where(o => o.OrderTime <= toDate);
+                }
+
                 if (sorts != null && sorts.Length > 0)
                 {
                     foreach (var s in sorts)
