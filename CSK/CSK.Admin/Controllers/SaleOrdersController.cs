@@ -511,6 +511,18 @@ namespace CSK.Admin.Controllers
             if (string.IsNullOrWhiteSpace(model.customer_phone) &&
                 string.IsNullOrWhiteSpace(model.customer_email))
                 listMess.Add("Vui lòng để lại thông tin liên lạc");
+            if (string.IsNullOrWhiteSpace(model.customer_address))
+                listMess.Add("Thiếu địa chỉ người mua");
+
+            if (!string.IsNullOrWhiteSpace(model.receiver_name)
+                || !string.IsNullOrWhiteSpace(model.receiver_phone)
+                || !string.IsNullOrWhiteSpace(model.receiver_address))
+            {
+                if (string.IsNullOrEmpty(model.receiver_phone))
+                    listMess.Add("Thiếu số điện thoại người nhận");
+                if (string.IsNullOrEmpty(model.receiver_address))
+                    listMess.Add("Thiếu địa chỉ người nhận");
+            }
 
             if ((!model.payment_type.Equals("cod") && !model.payment_type.Equals("transfer"))
                 || (string.IsNullOrWhiteSpace(model.ship_type))
