@@ -208,7 +208,7 @@
             var images = banner.images;
             for (var i = 0; i < images.length; i++) {
                 $('#banner-slider').append(
-                    $('<a href="' + images[i].link + '">').append(
+                    $('<a ' + (images[i].link ? ('href="' + images[i].link + '"') : '') + '>').append(
                         $('<div class="lo-banner site-blocks-cover inner-page py-5" data-aos="fade" style="background-image:url(\'' + images[i].img + '\')">')
                     )
                 );
@@ -220,7 +220,7 @@
             var images = bannerBot.images;
             for (var i = 0; i < images.length; i++) {
                 $('#banner-slider-bottom').append(
-                    $('<a href="' + images[i].link + '">').append(
+                    $('<a ' + (images[i].link ? ('href="' + images[i].link + '"') : '') + '>').append(
                         $('<div class="lo-banner site-blocks-cover inner-page py-5" data-aos="fade" style="background-image:url(\'' + images[i].img + '\')">')
                     )
                 );
