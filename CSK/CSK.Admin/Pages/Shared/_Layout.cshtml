@@ -238,6 +238,7 @@
             loadLayout();
         }
 
+        var loadCategories;
         async function loadLayout() {
 
             function addCateMenu(link, text) {
@@ -248,7 +249,8 @@
                 );
             }
 
-            await loadCategories();
+            loadCategories = loadCategories();
+            await loadCategories;
             var isSet = true;
             if (window.setLayout)
                 isSet = setLayout();
@@ -341,8 +343,8 @@
             });
         }
 
-        async function loadCategories() {
-            await $.ajax({
+    async function loadCategories() {
+        return $.ajax({
                 url: '/api/product-categories?fields=info&fields=pcount',
                 type: 'get',
                 success: (data) => {

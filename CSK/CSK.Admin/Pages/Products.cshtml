@@ -179,7 +179,7 @@
 
     var products;
     var pCount = 1;
-    var pageLimit = 10;
+    var pageLimit = 9;
     var curCate = '@Model.CateId';
     var search = '@Model.Search';
     search = decode(search);
@@ -195,10 +195,12 @@
     }
 
     pageInit();
-    function pageInit() {
+    async function pageInit() {
         $('#menu-products').addClass('active');
 
-        loadCategories();
+        await loadCategories;
+        addCategories();
+        loadProducts();
 
         $('#search-form').submit(() => {
             search = $('[name=search]').val();
@@ -231,23 +233,10 @@
     }
 
 
-    function loadCategories() {
-        $.ajax({
-            url: '/api/product-categories?fields=info&fields=pcount',
-            type: 'get',
-            success: (data) => {
-                console.log(data);
-                for (var i = 0; i < data.length; i++) {
-                    addCate(data[i]);
-                }
-
-                loadProducts();
-            },
-            error: (data) => {
-                console.log(data);
-                data = data.responseJSON;
-            }
-        });
+    function addCategories() {
+        for (var c in categories) {
+            addCate(categories[c]);
+        }
     }
 
     function setPage(page) {
@@ -395,6 +384,9 @@
                 pCount = Math.floor(data.length / pageLimit);
                 if (pCount == 0)
                     pCount = 1;
+                if (data.length % pageLimit != 0)
+                    pCount += 1;
+
                 setPage(1);
             },
             error: (data) => {

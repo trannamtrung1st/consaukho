@@ -162,8 +162,6 @@ namespace CSK.Admin.Controllers
                     query = query.OrderByDescending(p => p.SaleOrderDetails.Count);
                 if (visible == true)
                     query = query.Where(p => p.IsVisible == true);
-                if (limit > 0)
-                    query = query.Skip(page * limit).Take(limit);
                 if (sorts != null)
                 {
                     if (sorts.Length == 0)
@@ -209,6 +207,9 @@ namespace CSK.Admin.Controllers
                     query = query.Where(p => p.Name.Contains(search) ||
                         p.CategoriesOfProducts.Any(pC => pC.Category.Name.Contains(search)));
                 }
+
+                if (limit > 0)
+                    query = query.Skip(page * limit).Take(limit);
 
                 var pros = query.ToList();
                 if (fields == null || fields.Length == 0)

@@ -369,7 +369,7 @@
 
     function loadPopularProducts(amount) {
         $.ajax({
-            url: '/api/products?fields=info&popular=true&take=' + amount + '&visible=true',
+            url: '/api/products?fields=info&popular=true&limit=' + amount + '&visible=true',
             type: 'get',
             success: (data) => {
                 console.log(data);
