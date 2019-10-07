@@ -382,11 +382,8 @@
                 console.log(data);
                 products = data;
                 pCount = Math.floor(data.length / pageLimit);
-                if (pCount == 0)
-                    pCount = 1;
-                if (data.length % pageLimit != 0)
+                if (pageLimit * pCount < data.length)
                     pCount += 1;
-
                 setPage(1);
             },
             error: (data) => {
