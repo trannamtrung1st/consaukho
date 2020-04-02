@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -861,20 +862,33 @@ namespace CSK.Data
         public static async Task SendEmail(string subject, string body,
             string[] to)
         {
-            using (MailMessage mail = new MailMessage())
+            try
             {
-                mail.From = new MailAddress(emailFromAddress);
-                foreach (var m in to)
-                    mail.To.Add(m);
-                mail.Subject = subject;
-                mail.Body = body;
-                mail.IsBodyHtml = true;
-                using (SmtpClient smtp = new SmtpClient(smtpAddress, portNumber))
+                using (MailMessage mail = new MailMessage())
                 {
-                    smtp.Credentials = new NetworkCredential(emailFromAddress, password);
-                    smtp.EnableSsl = enableSSL;
-                    await smtp.SendMailAsync(mail);
+                    mail.From = new MailAddress(emailFromAddress);
+                    foreach (var m in to)
+                        mail.To.Add(m);
+                    mail.Subject = subject;
+                    mail.Body = body;
+                    mail.IsBodyHtml = true;
+                    using (SmtpClient smtp = new SmtpClient(smtpAddress, portNumber))
+                    {
+                        smtp.UseDefaultCredentials = false;
+                        smtp.Credentials = new NetworkCredential(emailFromAddress, password);
+                        smtp.EnableSsl = enableSSL;
+                        await smtp.SendMailAsync(mail);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                var today = DateTime.UtcNow.ToString("dd_MM_yyyy");
+                Directory.CreateDirectory("logs");
+                File.AppendAllLines("./logs/" + today + ".txt", new List<string>()
+                {
+                    JsonConvert.SerializeObject(e)
+                });
             }
         }
     }
